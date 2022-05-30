@@ -13,12 +13,12 @@ public class User {
     int id;
     String fullname, email, phoneNumber, address, password, roleName, created_at,
             updated_at, gender;
-    int idRole;
+    int idRole, status;
     
     public User() {
     }
 
-    public User(int id, String fullname, String email, String phoneNumber, String address, String password, String roleName, String created_at, String updated_at, String gender, int idRole) {
+    public User(int id, String fullname, String email, String phoneNumber, String address, String password, String roleName, String created_at, String updated_at, String gender, int idRole, int status) {
         this.id = id;
         this.fullname = fullname;
         this.email = email;
@@ -30,22 +30,10 @@ public class User {
         this.updated_at = updated_at;
         this.gender = gender;
         this.idRole = idRole;
+        this.status = status;
     }
 
-    public User(String fullname, String email, String phoneNumber, String address, String password, String roleName, String created_at, String updated_at, String gender, int idRole) {
-        this.fullname = fullname;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.address = address;
-        this.password = password;
-        this.roleName = roleName;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
-        this.gender = gender;
-        this.idRole = idRole;
-    }
-
-    public User(int id, String fullname, String email, String phoneNumber, String address, String password, String updated_at, String gender, int idRole) {
+    public User(int id, String fullname, String email, String phoneNumber, String address, String password, String updated_at, String gender, int idRole, int status) {
         this.id = id;
         this.fullname = fullname;
         this.email = email;
@@ -55,35 +43,24 @@ public class User {
         this.updated_at = updated_at;
         this.gender = gender;
         this.idRole = idRole;
+        this.status = status;
     }
+
+    public User(String fullname, String email, String phoneNumber, String address, String password, String created_at, String updated_at, String gender, int idRole, int status) {
+        this.fullname = fullname;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.password = password;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
+        this.gender = gender;
+        this.idRole = idRole;
+        this.status = status;
+    }
+
     
     
-
-    public User(int id, String fullname, String email, String phoneNumber, String address, String password, String roleName, String updated_at, String gender, int idRole) {
-        this.id = id;
-        this.fullname = fullname;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.address = address;
-        this.password = password;
-        this.roleName = roleName;
-        this.updated_at = updated_at;
-        this.gender = gender;
-        this.idRole = idRole;
-    }
-
-    public User(String fullname, String email, String phoneNumber, String address, String password, String created_at, String updated_at, String gender, int idRole) {
-        this.fullname = fullname;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.address = address;
-        this.password = password;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
-        this.gender = gender;
-        this.idRole = idRole;
-    }
-
     public int getId() {
         return id;
     }
@@ -171,7 +148,15 @@ public class User {
     public void setIdRole(int idRole) {
         this.idRole = idRole;
     }
-    
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
     
     
 }

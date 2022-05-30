@@ -10,25 +10,63 @@ package model;
  * @author Dell
  */
 public class BillImport {
-    int id, idProduct, count, idCreateStaff, idCarrier, idSupplier;
-    String nameProduct, nameCreateStaff, nameCarrier, nameSupplier, createTime;
+    int id, idProduct, count, idCreateStaff, idCarrier, idSupplier, price, status;
+    String nameProduct, nameCreateStaff, nameCarrier, nameSupplier, createTime, updateTime;
 
     public BillImport() {
     }
 
-    public BillImport(int id, int idProduct, int count, int idCreateStaff, int idCarrier, int idSupplier, String nameProduct, String nameCreateStaff, String nameCarrier, String nameSupplier, String createTime) {
+    public BillImport(int id, int idProduct, int count, int idCreateStaff, int idCarrier, int idSupplier, int price, int status, String nameProduct, String nameCreateStaff, String nameCarrier, String nameSupplier, String createTime, String updateTime) {
         this.id = id;
         this.idProduct = idProduct;
         this.count = count;
         this.idCreateStaff = idCreateStaff;
         this.idCarrier = idCarrier;
         this.idSupplier = idSupplier;
+        this.price = price;
+        this.status = status;
         this.nameProduct = nameProduct;
         this.nameCreateStaff = nameCreateStaff;
         this.nameCarrier = nameCarrier;
         this.nameSupplier = nameSupplier;
         this.createTime = createTime;
+        this.updateTime = updateTime;
     }
+
+    public BillImport(int idProduct, int count, int idCreateStaff, int idCarrier, int idSupplier, int price, int status, String createTime, String updateTime) {
+        this.idProduct = idProduct;
+        this.count = count;
+        this.idCreateStaff = idCreateStaff;
+        this.idCarrier = idCarrier;
+        this.idSupplier = idSupplier;
+        this.price = price;
+        this.status = status;
+        this.createTime = createTime;
+        this.updateTime = updateTime;
+    }
+
+    public BillImport(int id, int idProduct, int count, int idCarrier, int idSupplier, int price, int status, String updateTime) {
+        this.id = id;
+        this.idProduct = idProduct;
+        this.count = count;
+        this.idCarrier = idCarrier;
+        this.idSupplier = idSupplier;
+        this.price = price;
+        this.status = status;
+        this.updateTime = updateTime;
+    }
+    
+    public BillImport(int id, int idProduct, int count, int idCarrier, int idSupplier, int price, String updateTime) {
+        this.id = id;
+        this.idProduct = idProduct;
+        this.count = count;
+        this.idCarrier = idCarrier;
+        this.idSupplier = idSupplier;
+        this.price = price;
+        this.updateTime = updateTime;
+    }
+    
+    
 
     public int getId() {
         return id;
@@ -78,6 +116,22 @@ public class BillImport {
         this.idSupplier = idSupplier;
     }
 
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
     public String getNameProduct() {
         return nameProduct;
     }
@@ -117,6 +171,14 @@ public class BillImport {
     public void setCreateTime(String createTime) {
         this.createTime = createTime;
     }
-    
+
+    public String getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(String updateTime) {
+        this.updateTime = updateTime;
+    }
+
     
 }

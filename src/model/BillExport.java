@@ -10,5 +10,141 @@ package model;
  * @author Dell
  */
 public class BillExport {
+    int id, orderId, createStaffId, CarrierId;
+    String fullName, phoneNumber, email, address, note, createTime, nameStaff, nameCarrier, total;
+
+    public BillExport() {
+    }
+
+    public BillExport(int id, int orderId, int createStaffId, int CarrierId, String fullName, String phoneNumber, String email, String address, String note, String createTime, String nameStaff, String nameCarrier, String total) {
+        this.id = id;
+        this.orderId = orderId;
+        this.createStaffId = createStaffId;
+        this.CarrierId = CarrierId;
+        this.fullName = fullName;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.address = address;
+        this.note = note;
+        this.createTime = createTime;
+        this.nameStaff = nameStaff;
+        this.nameCarrier = nameCarrier;
+        this.total = total;
+    }
+
+    public BillExport(int orderId, int createStaffId, int CarrierId, String createTime) {
+        this.orderId = orderId;
+        this.createStaffId = createStaffId;
+        this.CarrierId = CarrierId;
+        this.createTime = createTime;
+    }
+    
+    
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
+    }
+
+    public int getCreateStaffId() {
+        return createStaffId;
+    }
+
+    public void setCreateStaffId(int createStaffId) {
+        this.createStaffId = createStaffId;
+    }
+
+    public int getCarrierId() {
+        return CarrierId;
+    }
+
+    public void setCarrierId(int CarrierId) {
+        this.CarrierId = CarrierId;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getNameStaff() {
+        return nameStaff;
+    }
+
+    public void setNameStaff(String nameStaff) {
+        this.nameStaff = nameStaff;
+    }
+
+    public String getNameCarrier() {
+        return nameCarrier;
+    }
+
+    public void setNameCarrier(String nameCarrier) {
+        this.nameCarrier = nameCarrier;
+    }
+
+    public String getTotal() {
+        return total;
+    }
+
+    public void setTotal(String total) {
+        this.total = total;
+    }
+
+   
     
 }

@@ -158,8 +158,8 @@ public class LoginFrm extends javax.swing.JDialog {
             isOK = false;
         }
         
-        if(jpfPassword.getPassword().length > 0) {
-            password = jpfPassword.getPassword().toString();
+        if(jpfPassword.getText().length() > 0) {
+            password = jpfPassword.getText();
         } else {
             JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập mật khẩu");
             isOK = false;

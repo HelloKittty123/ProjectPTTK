@@ -27,11 +27,6 @@ public class Category {
         this.h4content = h4content;
         this.h5content = h5content;
     }
-
-    Category(String fullname, String email, String phone_number, String address, String roleId, String password) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     
     public int getId() {
         return id;
@@ -65,8 +60,4 @@ public class Category {
         this.h5content = h5content;
     }
 
-    @Override
-    public String toString() {
-        return "Category{" + "id=" + id + ", name=" + name + ", h4content=" + h4content + ", h5content=" + h5content + '}';
-    }
 }

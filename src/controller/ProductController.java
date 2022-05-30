@@ -50,9 +50,9 @@ public class ProductController {
             
             while (resultSet.next()) {
                 Product prd = new Product(resultSet.getInt("id"),
-                    resultSet.getString("categoryName"),
                     resultSet.getString("title"),
                     resultSet.getString("price"),
+                    resultSet.getString("categoryName"),
                     resultSet.getString("description"),
                     resultSet.getString("thumbnail"),
                     resultSet.getString("created_at"),
@@ -219,7 +219,7 @@ public class ProductController {
             //query
             String sql = "select product.*, category.name categoryName "
                     + "from product join category "
-                    + "on category.id = category_id"
+                    + "on category.id = product.category_id "
                     + "where title like ?";
             statement = conn.prepareStatement(sql);
             statement.setString(1, title + "%");
@@ -262,6 +262,61 @@ public class ProductController {
         //ket thuc.
         
         return products;
+    }
+    
+    public static Product findByIdProduct(int id) {      
+        Product prd = null;
+        Connection conn = null;
+        PreparedStatement statement = null;
+        try {
+           
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_cuoi", "root", "trung123Aa");
+            
+            //query
+            String sql = "select product.*, category.name categoryName "
+                    + "from product join category "
+                    + "on category.id = category_id "
+                    + "where product.id = ?";
+            statement = conn.prepareStatement(sql);
+            statement.setInt(1, id);
+            
+            ResultSet resultSet = statement.executeQuery();
+            
+            while (resultSet.next()) {
+                prd = new Product(
+                    resultSet.getInt("id"),
+                    resultSet.getString("title"),
+                    resultSet.getString("price"),
+                    resultSet.getString("categoryName"),
+                    resultSet.getString("description"),
+                    resultSet.getString("thumbnail"),
+                    resultSet.getString("created_at"),
+                    resultSet.getString("updated_at"),
+                    resultSet.getInt("count")
+                );
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductController.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ProductController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(ProductController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        //ket thuc.
+        
+        return prd;
     }
 
 //    public static List<Product> findByCat(String name_cat) {

@@ -73,6 +73,7 @@ public class OrderController {
         
         return orderList;
     }
+    
     public static void update(Order order) {
         Connection conn = null;
         java.sql.PreparedStatement statement = null;
@@ -229,8 +230,6 @@ public class OrderController {
             while(resultSet.next()) {
                 total += resultSet.getInt("product_price") * resultSet.getInt("order_user.count");
             }
-            
-            
             
             sql = "update orders set total = ? where user_id = ?";
             statement = conn.prepareCall(sql);

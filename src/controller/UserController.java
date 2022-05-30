@@ -33,7 +33,8 @@ public class UserController {
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_cuoi", "root", "trung123Aa");
             
             //query
-            String sql = "select user.*, role.id idRole, role.name roleName from role, user where user.role_id = role.id";
+            String sql = "select user.*, role.id idRole, role.name roleName "
+                    + "from role join user on role.id = user.role_id";
             statement = (Statement) conn.createStatement();
             
             ResultSet resultSet = statement.executeQuery(sql);
@@ -49,7 +50,8 @@ public class UserController {
                     resultSet.getString("created_at"),
                     resultSet.getString("updated_at"),
                     resultSet.getString("gender"),
-                    resultSet.getInt("idRole")
+                    resultSet.getInt("idRole"),
+                    resultSet.getInt("status")
                 );
                 users.add(user);
             }
@@ -86,7 +88,7 @@ public class UserController {
             
             //query
             String sql = "insert into user(fullname, gender, email, phone_number, address,"
-                    + " password, role_id, created_at, updated_at) values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    + " password, role_id, created_at, updated_at, status) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             statement = conn.prepareCall(sql);
             
             statement.setString(1, user.getFullname());
@@ -98,49 +100,9 @@ public class UserController {
             statement.setString(7, String.valueOf(user.getIdRole()));
             statement.setString(8, user.getCreated_at());
             statement.setString(9, user.getUpdated_at());
+            statement.setInt(10, user.getStatus());
             
             statement.execute();
-        } catch (SQLException ex) {
-            Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            if(statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-        //ket thuc.
-    }
-    
-    public static void delete(int id) {
-        Connection conn = null;
-        java.sql.PreparedStatement statement = null;
-        
-        try {
-            //lay tat ca danh sach sinh vien
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_cuoi", "root", "trung123Aa");
-            
-            //query
-            String sql = "delete from orders where user_id = ?";
-            statement = conn.prepareCall(sql);
-            statement.setInt(1, id);
-            statement.execute();
-            
-            sql = "delete from user where id = ?";
-            statement = conn.prepareCall(sql);
-            statement.setInt(1, id);
-            statement.execute();
-            
         } catch (SQLException ex) {
             Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
@@ -172,7 +134,9 @@ public class UserController {
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_cuoi", "root", "trung123Aa");
             
             //query
-            String sql = "update user set fullname = ?, gender = ?, email = ?, phone_number = ?, address = ?, password = ?,  updated_at = ?, role_id = ? where id = ?";
+            String sql = "update user set fullname = ?, gender = ?, email = ?, "
+                    + "phone_number = ?, address = ?, password = ?,  updated_at = ?, "
+                    + "role_id = ?, status = ? where id = ?";
             statement = conn.prepareCall(sql);
             
             statement.setString(1, user.getFullname());
@@ -183,17 +147,18 @@ public class UserController {
             statement.setString(6, user.getPassword());
             statement.setString(7, user.getUpdated_at());
             statement.setInt(8, user.getIdRole());
-            statement.setInt(9, user.getId());
+            statement.setInt(9, user.getStatus());
+            statement.setInt(10, user.getId());
             
             statement.execute();
         } catch (SQLException ex) {
-            Logger.getLogger(ProductController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             if(statement != null) {
                 try {
                     statement.close();
                 } catch (SQLException ex) {
-                    Logger.getLogger(ProductController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
             
@@ -201,7 +166,7 @@ public class UserController {
                 try {
                     conn.close();
                 } catch (SQLException ex) {
-                    Logger.getLogger(ProductController.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -236,7 +201,240 @@ public class UserController {
                     resultSet.getString("roleName"),
                     resultSet.getString("created_at"),
                     resultSet.getString("updated_at"),
-                    resultSet.getInt("idRole")
+                    resultSet.getInt("idRole"),
+                    resultSet.getInt("status")
+                );
+                users.add(user);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        //ket thuc.
+        
+        return users;
+    }
+    
+    public static List<User> findAllStaff() {
+        List<User> users = new ArrayList<>();
+        
+        Connection conn = null;
+        Statement statement = null;
+        
+        try {
+            //lay tat ca danh sach sinh vien
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_cuoi", "root", "trung123Aa");
+            
+            //query
+            String sql = "select user.*, role.id idRole, role.name roleName "
+                    + "from user join role on role.id = user.role_id "
+                    + "where user.role_id = 4 or user.role_id = 3 or user.role_id = 2 or user.role_id = 1";
+            statement = (Statement) conn.createStatement();
+            
+            ResultSet resultSet = statement.executeQuery(sql);
+            
+            while (resultSet.next()) {
+                User user = new User( resultSet.getInt("id"),
+                    resultSet.getString("fullname"),
+                    resultSet.getString("email"),
+                    resultSet.getString("phone_number"),
+                    resultSet.getString("address"),
+                    resultSet.getString("password"),
+                    resultSet.getString("roleName"),
+                    resultSet.getString("created_at"),
+                    resultSet.getString("updated_at"),
+                    resultSet.getString("gender"),
+                    resultSet.getInt("idRole"),
+                    resultSet.getInt("status")
+                );
+                users.add(user);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        //ket thuc.
+        
+        return users;
+    }
+    
+    public static List<User> findAllCustom() {
+        List<User> users = new ArrayList<>();
+        
+        Connection conn = null;
+        Statement statement = null;
+        
+        try {
+            //lay tat ca danh sach sinh vien
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_cuoi", "root", "trung123Aa");
+            
+            //query
+            String sql = "select user.*, role.id idRole, role.name roleName "
+                    + "from user join role on role.id = user.role_id "
+                    + "where user.role_id = 5";
+            statement = (Statement) conn.createStatement();
+            
+            ResultSet resultSet = statement.executeQuery(sql);
+            
+            while (resultSet.next()) {
+                User user = new User( resultSet.getInt("id"),
+                    resultSet.getString("fullname"),
+                    resultSet.getString("email"),
+                    resultSet.getString("phone_number"),
+                    resultSet.getString("address"),
+                    resultSet.getString("password"),
+                    resultSet.getString("roleName"),
+                    resultSet.getString("created_at"),
+                    resultSet.getString("updated_at"),
+                    resultSet.getString("gender"),
+                    resultSet.getInt("idRole"),
+                    resultSet.getInt("status")
+                );
+                users.add(user);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        //ket thuc.
+        
+        return users;
+    }
+    
+    public static List<User> findAllCarrier() {
+        List<User> users = new ArrayList<>();
+        
+        Connection conn = null;
+        Statement statement = null;
+        
+        try {
+            //lay tat ca danh sach sinh vien
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_cuoi", "root", "trung123Aa");
+            
+            //query
+            String sql = "select user.*, role.id idRole, role.name roleName "
+                    + "from user join role on role.id = user.role_id "
+                    + "where user.role_id = 4";
+            statement = (Statement) conn.createStatement();
+            
+            ResultSet resultSet = statement.executeQuery(sql);
+            
+            while (resultSet.next()) {
+                User user = new User( resultSet.getInt("id"),
+                    resultSet.getString("fullname"),
+                    resultSet.getString("email"),
+                    resultSet.getString("phone_number"),
+                    resultSet.getString("address"),
+                    resultSet.getString("password"),
+                    resultSet.getString("roleName"),
+                    resultSet.getString("created_at"),
+                    resultSet.getString("updated_at"),
+                    resultSet.getString("gender"),
+                    resultSet.getInt("idRole"),
+                    resultSet.getInt("status")
+                );
+                users.add(user);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(UserController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        //ket thuc.
+        
+        return users;
+    }
+    
+    public static List<User> findAllCarrierOnWork() {
+        List<User> users = new ArrayList<>();
+        
+        Connection conn = null;
+        Statement statement = null;
+        
+        try {
+            //lay tat ca danh sach sinh vien
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_cuoi", "root", "trung123Aa");
+            
+            //query
+            String sql = "select user.*, role.id idRole, role.name roleName "
+                    + "from user join role on role.id = user.role_id "
+                    + "where user.role_id = 4 and user.status = 0";
+            statement = (Statement) conn.createStatement();
+            
+            ResultSet resultSet = statement.executeQuery(sql);
+            
+            while (resultSet.next()) {
+                User user = new User( resultSet.getInt("id"),
+                    resultSet.getString("fullname"),
+                    resultSet.getString("email"),
+                    resultSet.getString("phone_number"),
+                    resultSet.getString("address"),
+                    resultSet.getString("password"),
+                    resultSet.getString("roleName"),
+                    resultSet.getString("created_at"),
+                    resultSet.getString("updated_at"),
+                    resultSet.getString("gender"),
+                    resultSet.getInt("idRole"),
+                    resultSet.getInt("status")
                 );
                 users.add(user);
             }

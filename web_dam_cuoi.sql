@@ -35,7 +35,7 @@ CREATE TABLE `bill_export` (
   CONSTRAINT `bill_export_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
   CONSTRAINT `bill_export_ibfk_2` FOREIGN KEY (`id_create_staff`) REFERENCES `user` (`id`),
   CONSTRAINT `bill_export_ibfk_3` FOREIGN KEY (`id_carrier`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -58,16 +58,23 @@ CREATE TABLE `bill_import` (
   `id` int NOT NULL AUTO_INCREMENT,
   `id_product` int DEFAULT NULL,
   `count` int DEFAULT NULL,
+  `price` int DEFAULT NULL,
   `id_supplier` int DEFAULT NULL,
   `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
   `id_create_staff` int DEFAULT NULL,
   `id_carrier` int DEFAULT NULL,
+  `status` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_product` (`id_product`),
   KEY `id_supplier` (`id_supplier`),
+  KEY `id_create_staff` (`id_create_staff`),
+  KEY `id_carrier` (`id_carrier`),
   CONSTRAINT `bill_import_ibfk_1` FOREIGN KEY (`id_product`) REFERENCES `product` (`id`),
-  CONSTRAINT `bill_import_ibfk_2` FOREIGN KEY (`id_supplier`) REFERENCES `supplier` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `bill_import_ibfk_2` FOREIGN KEY (`id_supplier`) REFERENCES `supplier` (`id`),
+  CONSTRAINT `bill_import_ibfk_3` FOREIGN KEY (`id_create_staff`) REFERENCES `user` (`id`),
+  CONSTRAINT `bill_import_ibfk_4` FOREIGN KEY (`id_carrier`) REFERENCES `user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -76,6 +83,7 @@ CREATE TABLE `bill_import` (
 
 LOCK TABLES `bill_import` WRITE;
 /*!40000 ALTER TABLE `bill_import` DISABLE KEYS */;
+INSERT INTO `bill_import` VALUES (6,83,123,123,1,'2022-05-27 05:32:54','2022-05-27 05:32:54',64,66,1),(7,86,12,12,2,'2022-05-27 05:34:34','2022-05-27 05:34:34',64,67,1),(8,1,12,123,1,'2022-05-27 09:59:30','2022-05-27 09:59:30',64,66,1),(9,67,12,123,2,'2022-05-28 02:55:48','2022-05-28 02:55:48',64,66,1);
 /*!40000 ALTER TABLE `bill_import` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -146,7 +154,7 @@ CREATE TABLE `order_user` (
   `count` int DEFAULT NULL,
   `status` int DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -155,7 +163,7 @@ CREATE TABLE `order_user` (
 
 LOCK TABLES `order_user` WRITE;
 /*!40000 ALTER TABLE `order_user` DISABLE KEYS */;
-INSERT INTO `order_user` VALUES (26,56,41,1,1),(28,56,62,1,1),(29,56,1,1,1),(30,61,1,1,0),(31,61,78,1,0),(32,61,79,1,0),(33,65,1,1,1),(34,65,1,3,1);
+INSERT INTO `order_user` VALUES (26,56,41,1,1),(28,56,62,1,1),(29,56,1,1,1),(30,61,1,1,0),(31,61,78,1,0),(32,61,79,1,0),(35,65,1,1,1),(36,65,24,1,1),(37,65,85,1,1),(38,65,60,1,1),(39,68,1,1,1),(40,69,1,2,1),(41,70,1,1,1);
 /*!40000 ALTER TABLE `order_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -180,7 +188,7 @@ CREATE TABLE `orders` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -189,7 +197,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (27,65,'Nguyễn Thị Kim Anh','434343','ka1510@gmail.com','21212','2121',2360000,'2022-05-24 19:26:23',0);
+INSERT INTO `orders` VALUES (29,65,'Nguyễn Thị Kim Anh','434343','ka1510@gmail.com','12121','2121',1130000,'2022-05-27 16:51:11',0),(30,65,'Nguyễn Thị Kim Anh','123','ka1510@gmail.com','123','213',1300123,'2022-05-28 09:57:51',0),(31,68,'Trung','0123456','tr@gmail.com','21212','123',590000,'2022-06-06 05:13:00',0),(32,70,'as','111111','vdc@gmail.com','dsh','ẩgdae',590000,'2022-06-06 16:50:00',0),(33,69,'Phuong','123456789','phuong0611200@gmail.com','HN','Bàn ghế này là 1 mâm 6 ghế + 1 bàn à\r\nđắt thế',1180000,'2022-06-06 16:50:16',0);
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -213,7 +221,7 @@ CREATE TABLE `product` (
   PRIMARY KEY (`id`),
   KEY `category_id` (`category_id`),
   CONSTRAINT `product_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -222,7 +230,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
-INSERT INTO `product` VALUES (1,44,'Bàn ghế Louis',590000,'https://cuoihoihoangquan.vn/wp-content/uploads/2020/02/IMG_0313-1030x772.jpg','<ul style=\"padding-left: 30px;\">\n<li style=\"padding: 10px 0;\">1 bộ bao gồm 1 bàn 6 ghế: <span style=\"color: #b02b2c;\">500.000/bộ</span></li>\n<li style=\"padding: 10px 0;\">1 bộ ấm chén VIP có hoa văn bao gồm 1 ấm – 6 chén tách – 1 đĩa bánh kẹo ba tầng – 1 gạt tàn: <span style=\"color: #b02b2c;\">50.000/bộ</span></li>\n<li style=\"padding: 10px 0;\">Hoa lụa để bàn : <span style=\"color: #b02b2c;\">40.000/bàn</span></li>\n</ul>\n</br>Ghế này được làm theo lệnh của vua Louis XVI mang phong cách tân cổ điển Pháp có lưng ghế hình bầu dục và thường có đệm nhung hoặc đệm vải lanh tự nhiên. Ghế Louis hướng đến phục vụ trong những nhà hàng, hội nghị, sự kiện cưới sang trọng.',NULL,NULL,NULL),(24,44,'Bàn ghế Chiavari',540000,'https://cuoihoihoangquan.vn/wp-content/uploads/2020/02/IMG_0648-1030x772.jpg','<ul style=\"padding-left : 30px;\">\n	<li style=\"padding: 10px 0;\">1 bộ bao gồm 1 bàn 6 ghế và decor trang trí ghế : <span style=\"color: #b02b2c;\">300.000/bộ</span></li>\n	<li style=\"padding: 10px 0;\">1 bộ ấm chén thường bao gồm 1 ấm – 6 chén tách – 1 đĩa bánh kẹo ba tầng – 1 gạt tàn: <span style=\"color: #b02b2c;\">30.000/bộ</span></li>\n	<li style=\"padding: 10px 0;\">1 bộ ấm chén VIP có hoa văn bao gồm 1 ấm – 6 chén tách – 1 đĩa bánh kẹo ba tầng – 1 gạt tàn: <span style=\"color: #b02b2c;\">50.000/bộ</span></li>\n	<li style=\"padding: 10px 0;\">Hoa lụa để bàn : <span style=\"color: #b02b2c;\">40.000/bàn</span></li>\n	</ul> </br>\n<strong  style=\"color: #b02b2c;\">Ghế Chiavari</strong> hay còn gọi là <span style=\"color: #b02b2c;\"><strong> ghế Tiffany</strong></span> là loại ghế chuyên sử dụng trong các loại tiệc và đám cưới đẳng cấp. Ưu điểm của loại ghế Chiavari là ghế có thiết kế rất đẹp, phù hợp với cả phong cách tiệc cưới thanh lịch hiện đại.\r</br> \r Trang trí: <strong  style=\"color: #b02b2c;\">Ghế Chiavari</strong> để trần không trang trí gì lẫn kết hợp với các loại phụ kiện như hoa, phale, ruy băng đều đẹp và tôn không gian phòng tiệc cưới lên rất nhiều.',NULL,NULL,NULL),(58,44,'Bàn tròn – Ghế Chiavary ',760000,'https://cuoihoihoangquan.vn/wp-content/uploads/2020/10/IMG_0377.jpg','<ul style =\"padding-left: 30px;\">\n	<li style=\"padding: 10px 0;\">1 bộ bao gồm 1 bàn tron 1,2m + 8 ghế và decor trang trí ghế : <span style=\"color: #b02b2c;\">600.000/bộ</span></li>\n	<li style=\"padding: 10px 0;\">1 bộ ấm chén thường bao gồm 1 ấm – 8 chén tách – 1 đĩa bánh kẹo ba tầng – 1 gạt tàn: <span style=\"color:#b02b2c;\">50.000/bộ</span></li>\n	<li style=\"padding: 10px 0;\">1 bộ ấm chén VIP có hoa văn bao gồm 1 ấm – 8 chén tách – 1 đĩa bánh kẹo ba tầng – 1 gạt tàn: <span style=\"color: #b02b2c;\">70.000/bộ</span></li>\n	<li style=\"padding: 10px 0;\">Hoa lụa để bàn : <span style=\"color:#b02b2c;\">40.000/bàn</span></li>\n	</ul>\n</br><span style=\"color:#b02b2c;\"><strong>Ghế Chiavari</strong></span> kết hợp bàn tròn dành cho các bữa tiệc đẳng cấp.',NULL,NULL,NULL),(59,44,'Bàn ghế tựa lưng cao ',320000,'https://cuoihoihoangquan.vn/wp-content/uploads/2020/08/117383720_3105825256139734_5156113698400793552_o-1030x782.jpg','<ul style=\"padding-left: 30px;\">\n<li style=\"padding: 10px 0;\">1 bộ bao gồm 1 bàn 6 ghế đã bao gồm áo nơ : <span style=\"color: #b02b2c;\">200.000/bộ</span></li>\n<li style=\"padding: 10px 0;\">1 Ấm chén bao gồm : 1 ấm – 6 chén tách – đĩa 3 tầng – 1 gạt tàn: <span style=\"color: #b02b2c;\">30.000/bộ</span></li>\n<li style=\"padding: 10px 0;\">1 Ấm chén VIP có hoa văn bao gồm : 1 ấm – 6 chén tách – đĩa 3 tầng – 1 gạt tàn: <span style=\"color: #b02b2c;\">50.000/bộ</span></li>\n<li style=\"padding: 10px 0;\">Hoa lụa để bàn :&nbsp;<span style=\"color: #b02b2c;\">40.000/bàn</span></li>\n</ul>\n</br>Đây là loại ghế thường được sử dụng trong các khách sạn sang trọng và rất được yêu thích sử dụng trong mùa cưới hỏi từ 2017. Ưu điểm của <strong style=\"color: #b02b2c;\">Ghế Banquet</strong> là sự chắc chắn, có đệm êm ái, có tựa lưng cao kết hợp với kiểu dáng tối ưu giúp cho khách mời vô cùng thoải mái khi sử dụng.',NULL,NULL,NULL),(60,44,'Bàn ghế nhựa nơ váy',170000,'https://cuoihoihoangquan.vn/wp-content/uploads/2017/10/faceu_1581407272246-1030x773.jpeg','<ul style=\"padding-left: 30px;\">\n<li style=\"padding: 10px 0;\">1 bộ bao gồm 1 bàn 6 ghế và áo nơ bọc ghế :&nbsp;<span style=\"color: #b02b2c;\">100.000/bộ</span></li>\n<li style=\"padding: 10px 0;\">1 Ấm chén bao gồm 1 ấm 6 chén tách 2 đĩa bánh kẹo 1 gạt tàn:&nbsp;<span style=\"color: #b02b2c;\">30.000/bộ</span></li>\n<li style=\"padding: 10px 0;\">Hoa lụa để bàn :&nbsp;<span style=\"color: #b02b2c;\">40.000/bàn</span></li>\n</ul>\n</br>Với những không gian hẹp và cần nhiều bàn ghế để tiếp khách thì Bàn ghế nhựa áo nơ là sự lựa chọn hoàn hảo cho mọi nhà. Với giá thành rẻ, vận chuyển tiện lợi thi Bàn ghế nhựa áo nơ cũng mang lại nhiều tiện lợi cho khách hàng.',NULL,NULL,NULL),(61,46,'Phông Bạt VIP',2000000,'https://cuoihoihoangquan.vn/wp-content/uploads/2021/12/258440836_4456215514434028_8771031304552802333_n-Sao-chep-1030x773.jpg','<p style=\"color:#cf1b15;\">Kích thước Cao 3m – Rộng 4m</p>\n<p style=\"color:#cf1b15;\">Phông trên 4m thêm 500.000/m</p>\n<p style=\"color:#cf1b15;\">Khuyến mãi đèn led mưa sau phông\nhoặc đèn chiếu phông</p>',NULL,NULL,NULL),(62,46,'Phông bạt thường',1800000,'https://cuoihoihoangquan.vn/wp-content/uploads/2020/08/117581953_3105825299473063_4655466981981648398_o-1030x773.jpg','<p style=\"color:#cf1b15;\">Kích thước Cao 3m – Rộng 4m</p>\n<p style=\"color:#cf1b15;\">Phông trên 4m thêm 500.000/m</p>\n<p style=\"color:#cf1b15;\">Khuyến mãi đèn led mưa sau phông\nhoặc đèn chiếu phông</p>',NULL,NULL,NULL),(67,46,'NHÀ BẠT CƯỚI THẢ PHÔNG ',5000000,'https://cuoihoihoangquan.vn/wp-content/uploads/2017/10/faceu_1581407272246-1030x773.jpeg','<ul style=\"padding-left : 30px;\">\n<li style=\"padding:  5px 0;\">Nhà bạt lụa với đầy đủ màu sắc cơ bản</li>\n<li style=\"padding:  5px 0;\">Khung rạp bằng sắt, linh hoạt, tùy chọn kích thước</li>\n<li style=\"padding:  5px 0;\">Trang trí phông lụa thẳng xếp ly – đèn thả cách đoạn</li>\n<li style=\"padding:  5px 0;\">Túm trang trí theo tone màu</li>\n<li style=\"padding:  5px 0;\">Trần vải kèm đèn chùm</li>\n<li style=\"padding:  5px 0;\">Mái quây bằng bạt trắng</li>\n<li style=\"padding:  5px 0;\">Thảm cỏ trải sàn</li>\n</ul>\n<p>Giá thành: <span style=\"color:#cf1b15;\">150.000</span>đ/m2</p>\n<p>Dưới 20m2 tính = 20m2 (<span style=\"color:#cf1b15;\">3.000.000/nhà </span>)</p>\n<p>Ưu đãi:</p>\n<ul style=\"padding-left : 30px;\">\n<li style=\"padding:  5px 0;\">Miễn phí khảo sát, tư vấn</li>\n<li style=\"padding:  5px 0;\">Miễn phí vận chuyển Nội thành Hà Nội</li>\n<li style=\"padding:  5px 0;\">Miễn phí lắp đặt</li>\n</ul>',NULL,NULL,NULL),(68,46,'NHÀ BẠT CAO CẤP VÁCH TÚM – DECOR',4000000,'https://cuoihoihoangquan.vn/wp-content/uploads/2020/02/faceu_1577699227762-1030x773.jpg','<ul style=\"padding-left : 30px;\">\n<li style=\"padding:  5px 0;\">Nhà bạt lụa hoặc kim tuyến với đầy đủ màu sắc hiện đại</li>\n<li style=\"padding:  5px 0;\">Khung rạp bằng sắt không rỉ, dễ dàng lắp đặt, linh động kích thước</li>\n<li style=\"padding:  5px 0;\">Khung sắt hình sơn nhũ vàng</li>\n<li style=\"padding:  5px 0;\">Trang trí viền dây led và đèn chùm cao cấp</li>\n<li style=\"padding:  5px 0;\">Quanh nhà rạp trang trí trụ hoa lụa – bồn hoa trắng</li>\n<li style=\"padding:  5px 0;\">Có trần bằng vải lụa trắng và đèn chùm</li>\n<li style=\"padding:  5px 0;\">Thảm cỏ trải sàn</li>\n</ul>\n<p>Giá thành: <span style=\"color:#cf1b15;\">150.000</span>đ/m2</p>\n<p>Dưới 20m2 tính = 20m2 (<span style=\"color:#cf1b15;\">4.000.000/nhà </span>)</p>\n<p>Ưu đãi:</p>\n<ul style=\"padding-left : 30px;\">\n<li style=\"padding:  5px 0;\">Miễn phí khảo sát, tư vấn</li>\n<li style=\"padding:  5px 0;\">Miễn phí vận chuyển Nội thành Hà Nội</li>\n<li style=\"padding:  5px 0;\">Miễn phí lắp đặt</li>\n</ul>',NULL,NULL,NULL),(83,44,'123',123,'../image/ban_ghe.jpg','123',NULL,'2022-05-22 08:38:50','2022-05-22 11:54:54'),(84,44,'12345',123,NULL,'123',NULL,'2022-05-22 09:00:46','2022-05-22 09:24:03'),(85,46,'123',123,'123','123',NULL,'2022-05-22 09:11:11','2022-05-22 09:28:32'),(86,44,'aaa',12345,'https://cf.shopee.vn/file/f551778344ae975ec385005c60f8f64a','2112',NULL,'2022-05-22 09:30:12','2022-05-22 09:34:57');
+INSERT INTO `product` VALUES (1,44,'Bàn ghế Louis',590000,'https://cuoihoihoangquan.vn/wp-content/uploads/2020/02/IMG_0313-1030x772.jpg','<ul style=\"padding-left: 30px;\">\n<li style=\"padding: 10px 0;\">1 bộ bao gồm 1 bàn 6 ghế: <span style=\"color: #b02b2c;\">500.000/bộ</span></li>\n<li style=\"padding: 10px 0;\">1 bộ ấm chén VIP có hoa văn bao gồm 1 ấm – 6 chén tách – 1 đĩa bánh kẹo ba tầng – 1 gạt tàn: <span style=\"color: #b02b2c;\">50.000/bộ</span></li>\n<li style=\"padding: 10px 0;\">Hoa lụa để bàn : <span style=\"color: #b02b2c;\">40.000/bàn</span></li>\n</ul>\n</br>Ghế này được làm theo lệnh của vua Louis XVI mang phong cách tân cổ điển Pháp có lưng ghế hình bầu dục và thường có đệm nhung hoặc đệm vải lanh tự nhiên. Ghế Louis hướng đến phục vụ trong những nhà hàng, hội nghị, sự kiện cưới sang trọng.',12,NULL,NULL),(24,44,'Bàn ghế Chiavari',540000,'https://cuoihoihoangquan.vn/wp-content/uploads/2020/02/IMG_0648-1030x772.jpg','<ul style=\"padding-left : 30px;\">\n	<li style=\"padding: 10px 0;\">1 bộ bao gồm 1 bàn 6 ghế và decor trang trí ghế : <span style=\"color: #b02b2c;\">300.000/bộ</span></li>\n	<li style=\"padding: 10px 0;\">1 bộ ấm chén thường bao gồm 1 ấm – 6 chén tách – 1 đĩa bánh kẹo ba tầng – 1 gạt tàn: <span style=\"color: #b02b2c;\">30.000/bộ</span></li>\n	<li style=\"padding: 10px 0;\">1 bộ ấm chén VIP có hoa văn bao gồm 1 ấm – 6 chén tách – 1 đĩa bánh kẹo ba tầng – 1 gạt tàn: <span style=\"color: #b02b2c;\">50.000/bộ</span></li>\n	<li style=\"padding: 10px 0;\">Hoa lụa để bàn : <span style=\"color: #b02b2c;\">40.000/bàn</span></li>\n	</ul> </br>\n<strong  style=\"color: #b02b2c;\">Ghế Chiavari</strong> hay còn gọi là <span style=\"color: #b02b2c;\"><strong> ghế Tiffany</strong></span> là loại ghế chuyên sử dụng trong các loại tiệc và đám cưới đẳng cấp. Ưu điểm của loại ghế Chiavari là ghế có thiết kế rất đẹp, phù hợp với cả phong cách tiệc cưới thanh lịch hiện đại.\r</br> \r Trang trí: <strong  style=\"color: #b02b2c;\">Ghế Chiavari</strong> để trần không trang trí gì lẫn kết hợp với các loại phụ kiện như hoa, phale, ruy băng đều đẹp và tôn không gian phòng tiệc cưới lên rất nhiều.',0,NULL,NULL),(58,44,'Bàn tròn – Ghế Chiavary ',760000,'https://cuoihoihoangquan.vn/wp-content/uploads/2020/10/IMG_0377.jpg','<ul style =\"padding-left: 30px;\">\n	<li style=\"padding: 10px 0;\">1 bộ bao gồm 1 bàn tron 1,2m + 8 ghế và decor trang trí ghế : <span style=\"color: #b02b2c;\">600.000/bộ</span></li>\n	<li style=\"padding: 10px 0;\">1 bộ ấm chén thường bao gồm 1 ấm – 8 chén tách – 1 đĩa bánh kẹo ba tầng – 1 gạt tàn: <span style=\"color:#b02b2c;\">50.000/bộ</span></li>\n	<li style=\"padding: 10px 0;\">1 bộ ấm chén VIP có hoa văn bao gồm 1 ấm – 8 chén tách – 1 đĩa bánh kẹo ba tầng – 1 gạt tàn: <span style=\"color: #b02b2c;\">70.000/bộ</span></li>\n	<li style=\"padding: 10px 0;\">Hoa lụa để bàn : <span style=\"color:#b02b2c;\">40.000/bàn</span></li>\n	</ul>\n</br><span style=\"color:#b02b2c;\"><strong>Ghế Chiavari</strong></span> kết hợp bàn tròn dành cho các bữa tiệc đẳng cấp.',0,NULL,NULL),(59,44,'Bàn ghế tựa lưng cao ',320000,'https://cuoihoihoangquan.vn/wp-content/uploads/2020/08/117383720_3105825256139734_5156113698400793552_o-1030x782.jpg','<ul style=\"padding-left: 30px;\">\n<li style=\"padding: 10px 0;\">1 bộ bao gồm 1 bàn 6 ghế đã bao gồm áo nơ : <span style=\"color: #b02b2c;\">200.000/bộ</span></li>\n<li style=\"padding: 10px 0;\">1 Ấm chén bao gồm : 1 ấm – 6 chén tách – đĩa 3 tầng – 1 gạt tàn: <span style=\"color: #b02b2c;\">30.000/bộ</span></li>\n<li style=\"padding: 10px 0;\">1 Ấm chén VIP có hoa văn bao gồm : 1 ấm – 6 chén tách – đĩa 3 tầng – 1 gạt tàn: <span style=\"color: #b02b2c;\">50.000/bộ</span></li>\n<li style=\"padding: 10px 0;\">Hoa lụa để bàn :&nbsp;<span style=\"color: #b02b2c;\">40.000/bàn</span></li>\n</ul>\n</br>Đây là loại ghế thường được sử dụng trong các khách sạn sang trọng và rất được yêu thích sử dụng trong mùa cưới hỏi từ 2017. Ưu điểm của <strong style=\"color: #b02b2c;\">Ghế Banquet</strong> là sự chắc chắn, có đệm êm ái, có tựa lưng cao kết hợp với kiểu dáng tối ưu giúp cho khách mời vô cùng thoải mái khi sử dụng.',0,NULL,NULL),(60,44,'Bàn ghế nhựa nơ váy',170000,'https://cuoihoihoangquan.vn/wp-content/uploads/2017/10/faceu_1581407272246-1030x773.jpeg','<ul style=\"padding-left: 30px;\">\n<li style=\"padding: 10px 0;\">1 bộ bao gồm 1 bàn 6 ghế và áo nơ bọc ghế :&nbsp;<span style=\"color: #b02b2c;\">100.000/bộ</span></li>\n<li style=\"padding: 10px 0;\">1 Ấm chén bao gồm 1 ấm 6 chén tách 2 đĩa bánh kẹo 1 gạt tàn:&nbsp;<span style=\"color: #b02b2c;\">30.000/bộ</span></li>\n<li style=\"padding: 10px 0;\">Hoa lụa để bàn :&nbsp;<span style=\"color: #b02b2c;\">40.000/bàn</span></li>\n</ul>\n</br>Với những không gian hẹp và cần nhiều bàn ghế để tiếp khách thì Bàn ghế nhựa áo nơ là sự lựa chọn hoàn hảo cho mọi nhà. Với giá thành rẻ, vận chuyển tiện lợi thi Bàn ghế nhựa áo nơ cũng mang lại nhiều tiện lợi cho khách hàng.',0,NULL,NULL),(61,46,'Phông Bạt VIP',2000000,'https://cuoihoihoangquan.vn/wp-content/uploads/2021/12/258440836_4456215514434028_8771031304552802333_n-Sao-chep-1030x773.jpg','<p style=\"color:#cf1b15;\">Kích thước Cao 3m – Rộng 4m</p>\n<p style=\"color:#cf1b15;\">Phông trên 4m thêm 500.000/m</p>\n<p style=\"color:#cf1b15;\">Khuyến mãi đèn led mưa sau phông\nhoặc đèn chiếu phông</p>',0,NULL,NULL),(62,46,'Phông bạt thường',1800000,'https://cuoihoihoangquan.vn/wp-content/uploads/2020/08/117581953_3105825299473063_4655466981981648398_o-1030x773.jpg','<p style=\"color:#cf1b15;\">Kích thước Cao 3m – Rộng 4m</p>\n<p style=\"color:#cf1b15;\">Phông trên 4m thêm 500.000/m</p>\n<p style=\"color:#cf1b15;\">Khuyến mãi đèn led mưa sau phông\nhoặc đèn chiếu phông</p>',0,NULL,NULL),(67,46,'NHÀ BẠT CƯỚI THẢ PHÔNG ',5000000,'https://cuoihoihoangquan.vn/wp-content/uploads/2017/10/faceu_1581407272246-1030x773.jpeg','<ul style=\"padding-left : 30px;\">\n<li style=\"padding:  5px 0;\">Nhà bạt lụa với đầy đủ màu sắc cơ bản</li>\n<li style=\"padding:  5px 0;\">Khung rạp bằng sắt, linh hoạt, tùy chọn kích thước</li>\n<li style=\"padding:  5px 0;\">Trang trí phông lụa thẳng xếp ly – đèn thả cách đoạn</li>\n<li style=\"padding:  5px 0;\">Túm trang trí theo tone màu</li>\n<li style=\"padding:  5px 0;\">Trần vải kèm đèn chùm</li>\n<li style=\"padding:  5px 0;\">Mái quây bằng bạt trắng</li>\n<li style=\"padding:  5px 0;\">Thảm cỏ trải sàn</li>\n</ul>\n<p>Giá thành: <span style=\"color:#cf1b15;\">150.000</span>đ/m2</p>\n<p>Dưới 20m2 tính = 20m2 (<span style=\"color:#cf1b15;\">3.000.000/nhà </span>)</p>\n<p>Ưu đãi:</p>\n<ul style=\"padding-left : 30px;\">\n<li style=\"padding:  5px 0;\">Miễn phí khảo sát, tư vấn</li>\n<li style=\"padding:  5px 0;\">Miễn phí vận chuyển Nội thành Hà Nội</li>\n<li style=\"padding:  5px 0;\">Miễn phí lắp đặt</li>\n</ul>',12,NULL,NULL),(68,46,'NHÀ BẠT CAO CẤP VÁCH TÚM – DECOR',4000000,'https://cuoihoihoangquan.vn/wp-content/uploads/2020/02/faceu_1577699227762-1030x773.jpg','<ul style=\"padding-left : 30px;\">\n<li style=\"padding:  5px 0;\">Nhà bạt lụa hoặc kim tuyến với đầy đủ màu sắc hiện đại</li>\n<li style=\"padding:  5px 0;\">Khung rạp bằng sắt không rỉ, dễ dàng lắp đặt, linh động kích thước</li>\n<li style=\"padding:  5px 0;\">Khung sắt hình sơn nhũ vàng</li>\n<li style=\"padding:  5px 0;\">Trang trí viền dây led và đèn chùm cao cấp</li>\n<li style=\"padding:  5px 0;\">Quanh nhà rạp trang trí trụ hoa lụa – bồn hoa trắng</li>\n<li style=\"padding:  5px 0;\">Có trần bằng vải lụa trắng và đèn chùm</li>\n<li style=\"padding:  5px 0;\">Thảm cỏ trải sàn</li>\n</ul>\n<p>Giá thành: <span style=\"color:#cf1b15;\">150.000</span>đ/m2</p>\n<p>Dưới 20m2 tính = 20m2 (<span style=\"color:#cf1b15;\">4.000.000/nhà </span>)</p>\n<p>Ưu đãi:</p>\n<ul style=\"padding-left : 30px;\">\n<li style=\"padding:  5px 0;\">Miễn phí khảo sát, tư vấn</li>\n<li style=\"padding:  5px 0;\">Miễn phí vận chuyển Nội thành Hà Nội</li>\n<li style=\"padding:  5px 0;\">Miễn phí lắp đặt</li>\n</ul>',0,NULL,NULL),(83,44,'123',123,'../image/ban_ghe.jpg','123',123,'2022-05-22 08:38:50','2022-05-22 11:54:54'),(84,44,'12345',123,NULL,'123',0,'2022-05-22 09:00:46','2022-05-22 09:24:03'),(85,46,'123',123,'123','123',0,'2022-05-22 09:11:11','2022-05-22 09:28:32'),(86,44,'aaa',12345,'https://cf.shopee.vn/file/f551778344ae975ec385005c60f8f64a','2112',12,'2022-05-22 09:30:12','2022-05-22 09:34:57'),(88,NULL,NULL,NULL,NULL,NULL,0,NULL,NULL),(89,44,'Bàn ghế 123',123,'../image/Cac-hinh-anh-ban-ghe-go-phong-khach-dep-1.jpg','123',NULL,'2022-05-27 09:53:07','2022-05-27 09:56:07');
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -297,10 +305,11 @@ CREATE TABLE `user` (
   `role_id` int DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
+  `status` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `role_id` (`role_id`),
   CONSTRAINT `user_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb3 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -309,7 +318,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (62,'aa','Nam','2121212','12121312312','323232','321312',1,'2022-05-23 04:42:13','2022-05-24 12:05:56'),(64,'123','Nam','212131','31232131','1231','21213',4,'2022-05-23 11:44:44','2022-05-24 12:06:17'),(65,'Nguyễn Thị Kim Anh',NULL,'ka1510@gmail.com',NULL,NULL,'123456',5,'2022-05-24 18:16:29','2022-05-24 18:16:29');
+INSERT INTO `user` VALUES (62,'aa','Nam','2121212','12121312312','323232','321312',1,'2022-05-23 04:42:13','2022-05-24 12:05:56',0),(64,'123','Nam','123@gmail.com','31232131','1231','123456',2,'2022-05-23 11:44:44','2022-05-26 09:51:12',0),(65,'Nguyễn Thị Kim Anh',NULL,'ka1510@gmail.com',NULL,NULL,'123456',5,'2022-05-24 18:16:29','2022-05-24 18:16:29',NULL),(66,'bb','Nữ','12@gmail.com','1234','212121','123456',4,'2022-05-26 10:41:45','2022-05-26 10:41:45',0),(67,'cc','Nam','1234@gmail.com','1234','212121','123456',4,'2022-05-26 10:43:25','2022-05-26 10:43:31',0),(68,'Trung',NULL,'tr@gmail.com',NULL,NULL,'123456',5,'2022-06-06 05:07:02','2022-06-06 05:07:02',NULL),(69,'Phuong',NULL,'phuong0611200@gmail.com',NULL,NULL,'06112000',5,'2022-06-06 16:47:36','2022-06-06 16:47:36',NULL),(70,'as',NULL,'vdc@gmail.com',NULL,NULL,'123123',5,'2022-06-06 16:49:00','2022-06-06 16:49:00',NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -322,4 +331,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-05-25 17:33:51
+-- Dump completed on 2022-06-06 21:57:53

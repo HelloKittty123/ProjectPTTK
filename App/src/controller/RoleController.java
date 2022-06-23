@@ -28,7 +28,7 @@ public class RoleController {
         
         try {
             //lay tat ca danh sach sinh vien
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_cuoi", "root", "trung123Aa");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_hoi", "root", "trung123Aa");
             
             //query
             String sql = "select * from role";

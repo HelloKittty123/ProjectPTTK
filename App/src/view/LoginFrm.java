@@ -5,29 +5,25 @@
  */
 package view;
 
-import controller.UserController;
+import controller.AccountController;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
-import model.User;
+import model.Account;
 
 /**
  *
  * @author Dell
  */
-public class LoginFrm extends javax.swing.JDialog {
-
+public class LogInFrm extends javax.swing.JFrame {
 
     /**
-     * Creates new form LoginFrm1
+     * Creates new form LogInFrm
      */
     int staffId = 0;
-    List<User> users = new ArrayList<>();
-    
-    public LoginFrm(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    List<Account> accountList = new ArrayList<>();
+    public LogInFrm() {
         initComponents();
-        
         this.setLocationRelativeTo(null);
     }
 
@@ -48,7 +44,7 @@ public class LoginFrm extends javax.swing.JDialog {
         jpfPassword = new javax.swing.JPasswordField();
         btnLogin = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Arial", 1, 24)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -150,31 +146,31 @@ public class LoginFrm extends javax.swing.JDialog {
         String account = null, password = null;
         boolean isOK = true;
         boolean check = false;
-        users = UserController.findAll();
+        accountList = AccountController.findAll();
+
         if(jtfAccount.getText().length() > 0) {
             account = jtfAccount.getText();
         } else {
             JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập tài khoản");
             isOK = false;
         }
-        
         if(jpfPassword.getText().length() > 0) {
             password = jpfPassword.getText();
         } else {
             JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập mật khẩu");
             isOK = false;
         }
-        
+
         if(isOK) {
-            for(User user : users) {
-                if(account.equals(user.getEmail())) {
-                    if(password.equals(user.getPassword())) {
+            for(Account acc : accountList) {
+                if(account.equals(acc.getEmail())) {
+                    if(password.equals(acc.getPassword())) {
                         check = true;
-                        staffId = user.getId();
+                        staffId = AccountController.findStaffId(account);
                     }
-                } 
+                }
             }
-            
+
             if(!check) {
                 JOptionPane.showMessageDialog(rootPane, "Bạn nhập sai tài khoản hoặc mật khẩu!");
             } else {
@@ -200,28 +196,21 @@ public class LoginFrm extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(LoginFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LogInFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(LoginFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LogInFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(LoginFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LogInFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(LoginFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LogInFrm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         //</editor-fold>
 
-        /* Create and display the dialog */
+        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                LoginFrm dialog = new LoginFrm(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
+                new LogInFrm().setVisible(true);
             }
         });
     }
@@ -235,9 +224,7 @@ public class LoginFrm extends javax.swing.JDialog {
     private javax.swing.JPasswordField jpfPassword;
     private javax.swing.JTextField jtfAccount;
     // End of variables declaration//GEN-END:variables
-
-    int getStaffId() {
+    public int getStaffId() {
         return staffId;
     }
-
 }

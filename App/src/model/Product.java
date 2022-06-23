@@ -9,62 +9,59 @@ package model;
  * @author Admin
  */
 public class Product {
-    int id;
-    String title, price, categoryName, description, thumbnail;
-    String created_at, updated_at;
-    
-    int idCat, count;
+    int id, categoryId, price, count, idStaffCreated, idUpdatedStaff;
+    String categoryName, title, description, thumbnail, createdAt, updatedAt, nameStaffCreated, nameStaffUpdated;
 
     public Product() {
     }
 
-    public Product(int id, String title, String price, String categoryName, String description, String thumbnail, String created_at, String updated_at, int idCat, int count) {
+    public Product(int id, int categoryId, int price, int count, int idStaffCreated, int idUpdatedStaff, String categoryName, String title, String description, String thumbnail, String createdAt, String updatedAt, String nameStaffCreated, String nameStaffUpdated) {
         this.id = id;
-        this.title = title;
+        this.categoryId = categoryId;
         this.price = price;
+        this.count = count;
+        this.idStaffCreated = idStaffCreated;
+        this.idUpdatedStaff = idUpdatedStaff;
         this.categoryName = categoryName;
+        this.title = title;
         this.description = description;
         this.thumbnail = thumbnail;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
-        this.idCat = idCat;
-        this.count = count;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.nameStaffCreated = nameStaffCreated;
+        this.nameStaffUpdated = nameStaffUpdated;
     }
 
-    public Product(int id, String title, String price, String categoryName, String description, String thumbnail, String created_at, String updated_at, int count) {
+    public Product(int categoryId, int price, int count, int idStaffCreated, int idUpdatedStaff, String title, String description, String thumbnail, String createdAt, String updatedAt) {
+        this.categoryId = categoryId;
+        this.price = price;
+        this.count = count;
+        this.idStaffCreated = idStaffCreated;
+        this.idUpdatedStaff = idUpdatedStaff;
+        this.title = title;
+        this.description = description;
+        this.thumbnail = thumbnail;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public Product(int id, int categoryId, int price, int idUpdatedStaff, String title, String description, String thumbnail, String updatedAt) {
         this.id = id;
-        this.title = title;
+        this.categoryId = categoryId;
         this.price = price;
-        this.categoryName = categoryName;
+        this.idUpdatedStaff = idUpdatedStaff;
+        this.title = title;
         this.description = description;
         this.thumbnail = thumbnail;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
-        this.count = count;
+        this.updatedAt = updatedAt;
     }
 
-    public Product(String title, String price, String description, String thumbnail, String created_at, String updated_at, int idCat, int count) {
-        this.title = title;
-        this.price = price;
-        this.description = description;
-        this.thumbnail = thumbnail;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
-        this.idCat = idCat;
-        this.count = count;
-    }
-
-    public Product(int id, String title, String price, String description, String thumbnail, String updated_at, int idCat) {
+    public Product(int id, int count, int idUpdatedStaff, String updatedAt) {
         this.id = id;
-        this.title = title;
-        this.price = price;
-        this.description = description;
-        this.thumbnail = thumbnail;
-        this.updated_at = updated_at;
-        this.idCat = idCat;
+        this.count = count;
+        this.idUpdatedStaff = idUpdatedStaff;
+        this.updatedAt = updatedAt;
     }
-    
-    
 
     public int getId() {
         return id;
@@ -74,20 +71,44 @@ public class Product {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public int getCategoryId() {
+        return categoryId;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
-    public String getPrice() {
+    public int getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(int price) {
         this.price = price;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public int getIdStaffCreated() {
+        return idStaffCreated;
+    }
+
+    public void setIdStaffCreated(int idStaffCreated) {
+        this.idStaffCreated = idStaffCreated;
+    }
+
+    public int getIdUpdatedStaff() {
+        return idUpdatedStaff;
+    }
+
+    public void setIdUpdatedStaff(int idUpdatedStaff) {
+        this.idUpdatedStaff = idUpdatedStaff;
     }
 
     public String getCategoryName() {
@@ -96,6 +117,14 @@ public class Product {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {
@@ -114,38 +143,42 @@ public class Product {
         this.thumbnail = thumbnail;
     }
 
-    public String getCreated_at() {
-        return created_at;
+    public String getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreated_at(String created_at) {
-        this.created_at = created_at;
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public String getUpdated_at() {
-        return updated_at;
+    public String getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUpdated_at(String updated_at) {
-        this.updated_at = updated_at;
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
-    public int getIdCat() {
-        return idCat;
+    public String getNameStaffCreated() {
+        return nameStaffCreated;
     }
 
-    public void setIdCat(int idCat) {
-        this.idCat = idCat;
+    public void setNameStaffCreated(String nameStaffCreated) {
+        this.nameStaffCreated = nameStaffCreated;
     }
 
-    public int getCount() {
-        return count;
+    public String getNameStaffUpdated() {
+        return nameStaffUpdated;
     }
 
-    public void setCount(int count) {
-        this.count = count;
+    public void setNameStaffUpdated(String nameStaffUpdated) {
+        this.nameStaffUpdated = nameStaffUpdated;
     }
 
+    @Override
+    public String toString() {
+        return "Product{" + "id=" + id + ", categoryId=" + categoryId + ", price=" + price + ", count=" + count + ", idStaffCreated=" + idStaffCreated + ", idUpdatedStaff=" + idUpdatedStaff + ", categoryName=" + categoryName + ", title=" + title + ", description=" + description + ", thumbnail=" + thumbnail + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", nameStaffCreated=" + nameStaffCreated + ", nameStaffUpdated=" + nameStaffUpdated + '}';
+    }
     
     
 }

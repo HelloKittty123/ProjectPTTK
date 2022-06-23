@@ -28,19 +28,17 @@ public class CategoryController {
         
         try {
             //lay tat ca danh sach
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_cuoi", "root", "trung123Aa");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_hoi", "root", "trung123Aa");
             
             //query
             String sql = "select * from category";
-            statement = (Statement) conn.createStatement();
+            statement = conn.createStatement();
             
             ResultSet resultSet = statement.executeQuery(sql);
             
             while (resultSet.next()) {
                 Category category = new Category(resultSet.getInt("id"),
-                    resultSet.getString("name"),
-                    resultSet.getString("h4_content"),
-                    resultSet.getString("h5_content"));
+                    resultSet.getString("name"));
                 categoryList.add(category);
             }
         } catch (SQLException ex) {
@@ -67,44 +65,5 @@ public class CategoryController {
         return categoryList;
     }
     
-    public static void update(Category category) {
-        Connection conn = null;
-        java.sql.PreparedStatement statement = null;
-        
-        try {
-            //lay tat ca danh sach sinh vien
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_cuoi", "root", "trung123Aa");
-            
-            //query
-            String sql = "update category set name = ?, h4_content = ?, h5_content = ? where id = ?";
-            statement = conn.prepareCall(sql);
-            
-            statement.setString(1, category.getName());
-            statement.setString(2, category.getH4content());
-            statement.setString(3, category.getH5content());
-            statement.setInt(4, category.getId());
-            
-            
-            statement.execute();
-        } catch (SQLException ex) {
-            Logger.getLogger(CategoryController.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            if(statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(CategoryController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(CategoryController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-        //ket thuc.
-    }
+   
 }

@@ -3,9 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package view;
+import controller.AccountController;
 import controller.BillExportController;
 import controller.BillImportController;
 import controller.CategoryController;
+import controller.CustomController;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -13,18 +15,18 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import model.Category;
-import controller.FeedBackController;
-import controller.OrderController;
 import model.Product;
 import controller.ProductController;
 import controller.RoleController;
+import controller.StaffController;
 import controller.SupplierController;
 import model.Role;
-import model.User;
-import controller.UserController;
+import model.Account;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
@@ -32,10 +34,11 @@ import javax.imageio.ImageIO;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import model.BillExport;
 import model.BillImport;
-import model.Feedback;
-import model.Order;
+import model.Custom;
+import model.Staff;
 import model.Supplier;
 /**
  *
@@ -43,9 +46,8 @@ import model.Supplier;
  */
 public class AppManager extends javax.swing.JFrame {
     DefaultTableModel tableModelProduct;
-    DefaultTableModel tableModelUser;
+    DefaultTableModel tableModelStaff;
     DefaultTableModel tableModelFeedback; 
-    DefaultTableModel tableModelOrder;
     DefaultTableModel tableModelSupplier;
     DefaultTableModel tableModelBillExport;
     DefaultTableModel tableModelBillImport;
@@ -54,40 +56,33 @@ public class AppManager extends javax.swing.JFrame {
     
     List<Product> products = new ArrayList<>();
     List<Category> categoryList = new ArrayList<>();
-    List<User> staffList = new ArrayList<>();
-    List<User> carrierList = new ArrayList<>();
-    List<User> customList = new ArrayList<>();
+    List<Staff> staffList = new ArrayList<>();
+    List<Staff> carrierList = new ArrayList<>();
+    List<Custom> customList = new ArrayList<>();
     List<Role> roleList = new ArrayList<>();
-    List<Feedback> feedbackList = new ArrayList<>();
-    List<Order> orderList = new ArrayList<>();
     List<BillExport> billExportList = new ArrayList<>();
     List<BillImport> billImportList = new ArrayList<>();
     List<Supplier> supplierList = new ArrayList<>();
     
-    OrderProductFrm orderProductFrm;
-    BillExportFrm billExportFrm;
-    LoginFrm loginFrm;
+    BillExportDetailFrm billExportDetailFrm;
+    BillImportDetailFrm billImportDetailFrm;
+    ListCarrierFrm listCarrierFrm;
+    ListConsultingFrm listConsultingFrm;
+    ListWareHouseFrm listWareHouseFrm;
     
     int id_user = 0;
 
     /**
      * Creates new form NewJFrame
      */
-    public AppManager() {
+    public AppManager(int id) {
         initComponents();
-        
         this.setLocationRelativeTo(null);
-        loginFrm = new LoginFrm(this, rootPaneCheckingEnabled);
-        while(id_user == 0) {
-            loginFrm.setVisible(true);
-            id_user = loginFrm.getStaffId();
-        }
         
-        
+        id_user = id;
+        System.out.println(id_user);
         tableModelProduct = (DefaultTableModel) tableProduct.getModel();
-        tableModelUser = (DefaultTableModel) tableStaff.getModel();
-        tableModelFeedback = (DefaultTableModel) tableFeedback.getModel();
-        tableModelOrder = (DefaultTableModel) tableOrder.getModel();
+        tableModelStaff = (DefaultTableModel) tableStaff.getModel();
         tableModelSupplier = (DefaultTableModel) tableSupplier.getModel();
         tableModelBillExport = (DefaultTableModel) tableBillExport.getModel();
         tableModelBillImport = (DefaultTableModel) tableBillImport.getModel();
@@ -95,12 +90,15 @@ public class AppManager extends javax.swing.JFrame {
         
         showProduct();
         showStaff();
-        showFeedback();
-        showOrder();
         showBillExport();
         showBillImport();
         showSupplier();
         showCustom();
+        showStatistical();
+        
+        showComboBox_Category();
+        showComboBox_RoleUser();
+        
         
         tableProduct.addMouseListener(new MouseListener() {
             @Override
@@ -115,11 +113,23 @@ public class AppManager extends javax.swing.JFrame {
                 
                 txtTitleProduct.setText(prd.getTitle());
                 boxCategory.setSelectedItem(prd.getCategoryName());
-                txtPrice.setText(prd.getPrice());
+                txtPrice.setText(String.valueOf(prd.getPrice()));
                 txtDescProduct.setText(prd.getDescription());
                 txtThumbProduct.setText(prd.getThumbnail());
                 
-                btnDeleteProduct.setEnabled(true);
+                File file = new File(prd.getThumbnail());
+                // lấy đường dẫn file
+                String pathFile = file.getAbsolutePath();
+                System.out.println(pathFile);
+                BufferedImage b;
+                try {
+                    b = ImageIO.read(file);
+                    jlbThumbProduct.setIcon(new ImageIcon(b.getScaledInstance(200, 200, Image.SCALE_SMOOTH)));
+                    txtThumbProduct.setText(pathFile);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                
                 btnUpdateProduct.setEnabled(true);
             }
 
@@ -146,17 +156,18 @@ public class AppManager extends javax.swing.JFrame {
             @Override
             public void mousePressed(MouseEvent e) {
                 int selectedIndex = tableStaff.getSelectedRow();
-                User staff = staffList.get(selectedIndex);
+                Staff staff = staffList.get(selectedIndex);
                 
-                txtFullname.setText(staff.getFullname());
+                txtFullname.setText(staff.getFullName());
                 boxGender.setSelectedItem(staff.getGender());
                 txtEmail.setText(staff.getEmail());
                 txtPhonenumber.setText(staff.getPhoneNumber());
                 txtAddress.setText(staff.getAddress());
                 boxRole.setSelectedItem(staff.getRoleName());
                 txtPassword.setText(staff.getPassword());
-                cbStatusStaff.setSelectedIndex(staff.getStatus());
+                cbStatusStaff.setSelectedItem(staff.getStatus());
                 
+                txtEmail.setEnabled(false);
                 btnUpdateStaff.setEnabled(true);
 
             }
@@ -175,23 +186,60 @@ public class AppManager extends javax.swing.JFrame {
         
         });
         
-        tableOrder.addMouseListener(new MouseListener() {
+        tableCustom.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                int selectedIndex = tableCustom.getSelectedRow();
+                Custom custom = customList.get(selectedIndex);
+                
+                txtNameCustom.setText(custom.getFullName());
+                cbGenderCustom.setSelectedItem(custom.getGender());
+                txtEmailCustom.setText(custom.getEmail());
+                txtPhoneCustom.setText(custom.getPhoneNumber());
+                txtAddressCustom.setText(custom.getAddress());
+                
+               btnEditCustom.setEnabled(true);
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        
+        });
+        
+        
+        tableBillExport.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
             }
 
             @Override
             public void mousePressed(MouseEvent e) {
-                int selectedIndex = tableOrder.getSelectedRow();
-                Order order = orderList.get(selectedIndex);
+                int selectedIndex = tableBillExport.getSelectedRow();
+                BillExport billExport = billExportList.get(selectedIndex);
                 
-                txtFullnameOrder.setText(order.getFullname());
-                txtEmailOrder.setText(order.getEmail());
-                txtPhoneNumberOrder.setText(order.getPhoneNumber());
-                txtAddressOrder.setText(order.getAddress());
-                txtNoteOrder.setText(order.getNote());
+                txtIDCustom.setText(String.valueOf(billExport.getIdCustom()));
+                txtNoteBillExport.setText(billExport.getNote());
+                jtfDateStart.setText(billExport.getTimeStartedBorrowed());
+                jtfDateEnd.setText(billExport.getTimeEndBorrowed());
+                txtIDCarrierBillExport.setText(String.valueOf(billExport.getIdCarrier()));
                 
-                btnCreateBillExport.setEnabled(true);
+                txtIDCustom.setEditable(false);
+                btnUpdateBillExport.setEnabled(true);
                 btnDeleteOrder.setEnabled(true);
                 btnShowProductOrder.setEnabled(true);
             }
@@ -220,15 +268,13 @@ public class AppManager extends javax.swing.JFrame {
                 int selectedIndex = tableBillImport.getSelectedRow();
                 BillImport billImport = billImportList.get(selectedIndex);
                 
-                cbSupplier.setSelectedItem(billImport.getNameSupplier());
-                cbProduct.setSelectedItem(billImport.getNameProduct());
-                txtCountProduct.setText(String.valueOf(billImport.getCount()));
-                txtPriceProduct.setText(String.valueOf(billImport.getPrice()));
-                cbCarrierBillImport.setSelectedItem(billImport.getNameCarrier());
+                txtIDSupplier.setText(String.valueOf(billImport.getIdSupplier()));
+                txtIDCarrierBillImport.setText(String.valueOf(billImport.getIdCarrier()));
                 
+                txtIDSupplier.setEditable(false);
                 btnEditBillImport.setEnabled(true);
                 btnDeleteBillImport.setEnabled(true);
-                btnSuccessBillImport.setEnabled(true);
+                btnShowListBillImport.setEnabled(true);
             }
 
             @Override
@@ -279,12 +325,9 @@ public class AppManager extends javax.swing.JFrame {
         
         });
         
-        
-        showComboBox_Category();
-        showComboBox_RoleUser();
-        showComboBox_Supplier();
-        showComboBox_Product();
-        showComboBox_Carrier();
+    }
+
+    private AppManager() {
     }
     
     public void showComboBox_Category() {
@@ -307,33 +350,6 @@ public class AppManager extends javax.swing.JFrame {
         });
     }
     
-    public void showComboBox_Supplier() {
-        DefaultComboBoxModel<String> comboBoxModelSupplier = (DefaultComboBoxModel<String>) cbSupplier.getModel();
-        comboBoxModelSupplier.removeAllElements();
-        supplierList = SupplierController.findAll();
-        supplierList.forEach(supplier -> { 
-            comboBoxModelSupplier.addElement(supplier.getName());
-        });
-    }
-    
-    public void showComboBox_Product() {
-        DefaultComboBoxModel<String> comboBoxModelProduct = (DefaultComboBoxModel<String>) cbProduct.getModel();
-        comboBoxModelProduct.removeAllElements();
-        products = ProductController.findAll();
-        products.forEach(product -> {
-            comboBoxModelProduct.addElement(product.getTitle());
-        });
-    }
-    
-    public void showComboBox_Carrier() {
-        DefaultComboBoxModel<String> comboBoxModelCarrier = (DefaultComboBoxModel<String>) cbCarrierBillImport.getModel();
-        comboBoxModelCarrier.removeAllElements();
-        carrierList = UserController.findAllCarrierOnWork();
-        carrierList.forEach(carrier -> {
-            comboBoxModelCarrier.addElement(carrier.getFullname());
-        });
-    }
-    
     private void showProduct() {
         products = ProductController.findAll();
         
@@ -342,92 +358,64 @@ public class AppManager extends javax.swing.JFrame {
         products.forEach((prd) -> {
             tableModelProduct.addRow(new Object[] {
                 tableModelProduct.getRowCount() + 1,
+                prd.getId(),
                 prd.getTitle(),
                 prd.getCategoryName(),
                 prd.getPrice(),
                 prd.getDescription(),
                 prd.getThumbnail(),
                 prd.getCount(),
-                prd.getCreated_at(),
-                prd.getUpdated_at()
+                prd.getCreatedAt(),
+                prd.getNameStaffCreated(),
+                prd.getUpdatedAt(),
+                prd.getNameStaffUpdated(),
             });
         });
     } 
     
     private void showStaff() {
-        staffList = UserController.findAllStaff();
+        staffList = StaffController.findAll();
         
-        tableModelUser.setRowCount(0);
+        tableModelStaff.setRowCount(0);
         
         staffList.forEach((staff) -> {
-            tableModelUser.addRow(new Object[] {tableModelUser.getRowCount() + 1,
-                staff.getFullname(),
+            tableModelStaff.addRow(new Object[] {tableModelStaff.getRowCount() + 1,
+                staff.getId(),
+                staff.getFullName(),
                 staff.getGender(),
                 staff.getEmail(),
                 staff.getPhoneNumber(),
                 staff.getAddress(),
                 staff.getRoleName(),
                 staff.getPassword(),
-                staff.getCreated_at(),
-                staff.getUpdated_at(),
+                staff.getCreatedAt(),
+                staff.getUpdatedAt(),
                 staff.getStatus()
             });
         });
     }
     
     private void showCustom() {
-        customList = UserController.findAllCustom();
+        customList = CustomController.findAll();
         
         tableModelCustom.setRowCount(0);
         
         customList.forEach((custom) -> {
-            tableModelCustom.addRow(new Object[] {tableModelUser.getRowCount() + 1,
-                custom.getFullname(),
+            tableModelCustom.addRow(new Object[] {tableModelCustom.getRowCount() + 1,
+                custom.getId(),
+                custom.getFullName(),
                 custom.getGender(),
                 custom.getEmail(),
                 custom.getPhoneNumber(),
                 custom.getAddress(),
-                custom.getRoleName(),
-                custom.getPassword(),
                 custom.getCreated_at(),
-                custom.getUpdated_at()});
+                custom.getNameCreatedStaff(),
+                custom.getUpdated_at(),
+                custom.getNameUpdatedStaff()
+            });
         });
     }
     
-    private void showFeedback() {
-        feedbackList = FeedBackController.findAll();
-        
-        tableModelFeedback.setRowCount(0);
-        
-        feedbackList.forEach((feedback) -> {
-            tableModelFeedback.addRow(new Object[] {tableModelFeedback.getRowCount() + 1,
-                feedback.getEmail(),
-                feedback.getFullname(),
-                feedback.getPhoneNumber(),
-                feedback.getAddress(),
-                feedback.getNote(),
-                feedback.getPhoneNumber(),
-                feedback.getCreated_at()});
-        });
-    }
-    
-    private void showOrder() {
-        orderList = OrderController.findAll();
-        
-        tableModelOrder.setRowCount(0);
-        
-        orderList.forEach((order) -> {
-            tableModelOrder.addRow(new Object[] {tableModelOrder.getRowCount() + 1,
-                order.getFullname(),
-                order.getEmail(),
-                order.getPhoneNumber(),
-                order.getAddress(),
-                order.getNote(),
-                order.getTotalMoney(),
-                order.getCreateTime(),
-                order.getStatus()});
-        });
-    }
     
     private void showBillExport() {
         billExportList = BillExportController.findAll();
@@ -436,15 +424,20 @@ public class AppManager extends javax.swing.JFrame {
         
         billExportList.forEach((billExport) -> {
             tableModelBillExport.addRow(new Object[] {tableModelBillExport.getRowCount() + 1,
-                billExport.getFullName(),
+                billExport.getNameCustom(),
+                billExport.getGender(),
                 billExport.getEmail(),
                 billExport.getPhoneNumber(),
                 billExport.getAddress(),
                 billExport.getNote(),
                 billExport.getTotal(),
-                billExport.getCreateTime(),
                 billExport.getNameCarrier(),
-                billExport.getNameStaff()
+                billExport.getTimeStartedBorrowed(),
+                billExport.getTimeEndBorrowed(),
+                billExport.getCreatedAt(),
+                billExport.getNameStaffCreated(),
+                billExport.getUpdatedAt(),
+                billExport.getNameStaffUpdated()
             });
         });
     }
@@ -457,13 +450,12 @@ public class AppManager extends javax.swing.JFrame {
         billImportList.forEach((billImport) -> {
             tableModelBillImport.addRow(new Object[] {tableModelBillImport.getRowCount() + 1,
                 billImport.getNameSupplier(),
-                billImport.getNameProduct(),
-                billImport.getCount(),
-                billImport.getPrice(),
+                billImport.getTotal(),
                 billImport.getNameCarrier(),
-                billImport.getCreateTime(),
-                billImport.getNameCreateStaff(),
-                billImport.getStatus()
+                billImport.getCreatedAt(),
+                billImport.getNameStaffCreated(),
+                billImport.getUpdatedAt(),
+                billImport.getNameStaffUpdated()
             });
         });
     }
@@ -475,15 +467,29 @@ public class AppManager extends javax.swing.JFrame {
         
         supplierList.forEach((supplier) -> {
             tableModelSupplier.addRow(new Object[] {tableModelSupplier.getRowCount() + 1,
+                supplier.getId(),
                 supplier.getName(),
                 supplier.getPhoneNumber(),
                 supplier.getEmail(),
                 supplier.getAddress(),
-                supplier.getCreatedTime(),
-                supplier.getUpdatedTime()});
+                supplier.getCreatedAt(),
+                supplier.getNameStaffCreated(),
+                supplier.getUpdatedAt(),
+                supplier.getNameStaffUpdated()
+            });
         });
     }
     
+    public void showStatistical() {
+        NumberFormat currentLocale = NumberFormat.getInstance();
+        int totalRevenue = BillExportController.getAllTotal();
+        int totalEntered = BillImportController.getAllTotal();
+        int interest = totalRevenue - totalEntered;
+        
+        jlbTotalRevenue.setText(String.valueOf(currentLocale.format(totalRevenue)));
+        jlbToTalEntered.setText(String.valueOf(currentLocale.format(totalEntered)));
+        jlbInterest.setText(String.valueOf(currentLocale.format(interest)));
+    }
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -507,7 +513,6 @@ public class AppManager extends javax.swing.JFrame {
         Price = new javax.swing.JLabel();
         Category = new javax.swing.JLabel();
         btnInsertProduct = new javax.swing.JButton();
-        btnDeleteProduct = new javax.swing.JButton();
         btnResetProduct = new javax.swing.JButton();
         btnFindProduct = new javax.swing.JButton();
         btnUpdateProduct = new javax.swing.JButton();
@@ -520,10 +525,6 @@ public class AppManager extends javax.swing.JFrame {
         tableProduct = new javax.swing.JTable();
         jlbThumbProduct = new javax.swing.JLabel();
         btnSelectImg = new javax.swing.JButton();
-        jplGuest = new javax.swing.JPanel();
-        jScrollPane7 = new javax.swing.JScrollPane();
-        tableCustom = new javax.swing.JTable();
-        btnFindCustom = new javax.swing.JButton();
         jplStaff = new javax.swing.JPanel();
         jlbGender = new javax.swing.JLabel();
         jlbName = new javax.swing.JLabel();
@@ -547,11 +548,16 @@ public class AppManager extends javax.swing.JFrame {
         boxRole = new javax.swing.JComboBox<>();
         jLabel13 = new javax.swing.JLabel();
         cbStatusStaff = new javax.swing.JComboBox<>();
-        jplResponse = new javax.swing.JPanel();
-        jScrollPane5 = new javax.swing.JScrollPane();
-        tableFeedback = new javax.swing.JTable();
-        btnFindResponse = new javax.swing.JButton();
+        btnConsulting = new javax.swing.JButton();
+        btnWarhouse = new javax.swing.JButton();
+        btnCarrier = new javax.swing.JButton();
         jplStatistic = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jlbTotalRevenue = new javax.swing.JLabel();
+        jlbToTalEntered = new javax.swing.JLabel();
+        jlbInterest = new javax.swing.JLabel();
         jplSupplier = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -567,49 +573,59 @@ public class AppManager extends javax.swing.JFrame {
         btnResetSupplier = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         tableSupplier = new javax.swing.JTable();
+        jplGuest = new javax.swing.JPanel();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        tableCustom = new javax.swing.JTable();
+        jPanel12 = new javax.swing.JPanel();
+        jLabel23 = new javax.swing.JLabel();
+        jLabel24 = new javax.swing.JLabel();
+        jLabel25 = new javax.swing.JLabel();
+        jLabel26 = new javax.swing.JLabel();
+        txtNameCustom = new javax.swing.JTextField();
+        txtEmailCustom = new javax.swing.JTextField();
+        txtPhoneCustom = new javax.swing.JTextField();
+        txtAddressCustom = new javax.swing.JTextField();
+        jLabel29 = new javax.swing.JLabel();
+        cbGenderCustom = new javax.swing.JComboBox<>();
+        btnFindCustom = new javax.swing.JButton();
+        btnEditCustom = new javax.swing.JButton();
+        btnResetCustom = new javax.swing.JButton();
+        btnAddCustom = new javax.swing.JButton();
         jplBillManage = new javax.swing.JTabbedPane();
         jplBillExport = new javax.swing.JPanel();
-        jScrollPane11 = new javax.swing.JScrollPane();
-        tableBillExport = new javax.swing.JTable();
-        jplBill = new javax.swing.JPanel();
         jScrollPane10 = new javax.swing.JScrollPane();
-        tableOrder = new javax.swing.JTable();
+        tableBillExport = new javax.swing.JTable();
         jPanel11 = new javax.swing.JPanel();
         btnDeleteOrder = new javax.swing.JButton();
         btnShowProductOrder = new javax.swing.JButton();
         btnFindOrder = new javax.swing.JButton();
         btnResetOrder = new javax.swing.JButton();
         jLabel15 = new javax.swing.JLabel();
-        jLabel16 = new javax.swing.JLabel();
-        jLabel17 = new javax.swing.JLabel();
-        jLabel18 = new javax.swing.JLabel();
-        jLabel19 = new javax.swing.JLabel();
-        txtFullnameOrder = new javax.swing.JTextField();
-        txtEmailOrder = new javax.swing.JTextField();
-        txtPhoneNumberOrder = new javax.swing.JTextField();
-        txtAddressOrder = new javax.swing.JTextField();
-        txtNoteOrder2 = new javax.swing.JScrollPane();
-        txtNoteOrder = new javax.swing.JTextArea();
+        txtIDCustom = new javax.swing.JTextField();
         btnCreateBillExport = new javax.swing.JButton();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel21 = new javax.swing.JLabel();
+        jtfDateStart = new javax.swing.JTextField();
+        jLabel22 = new javax.swing.JLabel();
+        jtfDateEnd = new javax.swing.JTextField();
+        jLabel16 = new javax.swing.JLabel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        txtNoteBillExport = new javax.swing.JTextArea();
+        btnUpdateBillExport = new javax.swing.JButton();
+        txtIDCarrierBillExport = new javax.swing.JTextField();
         jplBillImport = new javax.swing.JPanel();
         jScrollPane12 = new javax.swing.JScrollPane();
         tableBillImport = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
-        cbProduct = new javax.swing.JComboBox<>();
-        cbSupplier = new javax.swing.JComboBox<>();
-        cbCarrierBillImport = new javax.swing.JComboBox<>();
-        txtPriceProduct = new javax.swing.JTextField();
         btnEditBillImport = new javax.swing.JButton();
         btnAddBillImport = new javax.swing.JButton();
         btnResetBillImport = new javax.swing.JButton();
         btnDeleteBillImport = new javax.swing.JButton();
         btnFindBillImport = new javax.swing.JButton();
-        txtCountProduct = new javax.swing.JTextField();
-        btnSuccessBillImport = new javax.swing.JButton();
+        btnShowListBillImport = new javax.swing.JButton();
+        txtIDSupplier = new javax.swing.JTextField();
+        txtIDCarrierBillImport = new javax.swing.JTextField();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -643,14 +659,6 @@ public class AppManager extends javax.swing.JFrame {
         btnInsertProduct.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnInsertProductActionPerformed(evt);
-            }
-        });
-
-        btnDeleteProduct.setText("Xóa");
-        btnDeleteProduct.setEnabled(false);
-        btnDeleteProduct.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDeleteProductActionPerformed(evt);
             }
         });
 
@@ -703,11 +711,9 @@ public class AppManager extends javax.swing.JFrame {
                         .addComponent(btnInsertProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(50, 50, 50)
                         .addComponent(btnUpdateProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(50, 50, 50)
-                        .addComponent(btnDeleteProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(42, 42, 42)
+                        .addGap(48, 48, 48)
                         .addComponent(btnFindProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(41, 41, 41)
+                        .addGap(49, 49, 49)
                         .addComponent(btnResetProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(infoProductLayout.createSequentialGroup()
                         .addGroup(infoProductLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -723,7 +729,7 @@ public class AppManager extends javax.swing.JFrame {
                             .addComponent(boxCategory, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jScrollPane9, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
                             .addComponent(txtTitleProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(51, Short.MAX_VALUE))
+                .addContainerGap(129, Short.MAX_VALUE))
         );
         infoProductLayout.setVerticalGroup(
             infoProductLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -752,7 +758,6 @@ public class AppManager extends javax.swing.JFrame {
                 .addGroup(infoProductLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnInsertProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnUpdateProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnDeleteProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnFindProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnResetProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(19, 19, 19))
@@ -763,11 +768,11 @@ public class AppManager extends javax.swing.JFrame {
 
             },
             new String [] {
-                "STT", "Tên Sản Phẩm", "Danh Mục sản Phẩm", "Giá", "Mô Tả", "Hình ảnh", "Số lượng tồn kho", "Ngày tạo", "Ngày update"
+                "STT", "ID sản phẩm", "Tên Sản Phẩm", "Danh Mục sản Phẩm", "Giá", "Mô Tả", "Link hình ảnh", "Số lượng tồn kho", "Ngày tạo", "Người tạo", "Ngày update", "Người update"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, true, false, false
+                false, true, false, false, false, false, true, true, false, true, false, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -782,15 +787,15 @@ public class AppManager extends javax.swing.JFrame {
             tableProduct.getColumnModel().getColumn(0).setMinWidth(5);
             tableProduct.getColumnModel().getColumn(0).setPreferredWidth(50);
             tableProduct.getColumnModel().getColumn(0).setMaxWidth(100);
-            tableProduct.getColumnModel().getColumn(1).setMinWidth(100);
-            tableProduct.getColumnModel().getColumn(1).setPreferredWidth(120);
-            tableProduct.getColumnModel().getColumn(1).setMaxWidth(150);
             tableProduct.getColumnModel().getColumn(2).setMinWidth(100);
             tableProduct.getColumnModel().getColumn(2).setPreferredWidth(120);
-            tableProduct.getColumnModel().getColumn(2).setMaxWidth(200);
-            tableProduct.getColumnModel().getColumn(3).setMinWidth(50);
-            tableProduct.getColumnModel().getColumn(3).setPreferredWidth(100);
-            tableProduct.getColumnModel().getColumn(3).setMaxWidth(150);
+            tableProduct.getColumnModel().getColumn(2).setMaxWidth(150);
+            tableProduct.getColumnModel().getColumn(3).setMinWidth(100);
+            tableProduct.getColumnModel().getColumn(3).setPreferredWidth(120);
+            tableProduct.getColumnModel().getColumn(3).setMaxWidth(200);
+            tableProduct.getColumnModel().getColumn(4).setMinWidth(50);
+            tableProduct.getColumnModel().getColumn(4).setPreferredWidth(100);
+            tableProduct.getColumnModel().getColumn(4).setMaxWidth(150);
         }
 
         jlbThumbProduct.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder("Hình ảnh")));
@@ -810,15 +815,15 @@ public class AppManager extends javax.swing.JFrame {
                 .addGap(25, 25, 25)
                 .addGroup(jplProductLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jplProductLayout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 933, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 118, Short.MAX_VALUE))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1052, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jplProductLayout.createSequentialGroup()
                         .addComponent(infoProduct, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addGroup(jplProductLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jplProductLayout.createSequentialGroup()
                                 .addComponent(jlbThumbProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addContainerGap(331, Short.MAX_VALUE))
                             .addGroup(jplProductLayout.createSequentialGroup()
                                 .addGap(86, 86, 86)
                                 .addComponent(btnSelectImg, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -836,65 +841,10 @@ public class AppManager extends javax.swing.JFrame {
                         .addComponent(btnSelectImg, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(338, Short.MAX_VALUE))
+                .addContainerGap(342, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Quản lý sản phẩm", jplProduct);
-
-        tableCustom.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "STT", "Họ và tên", "Giới tính", "Email", "Số điện thoại", "Địa chỉ", "Mật khẩu", "Ngày tạo", "Ngày update"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        tableCustom.setRowHeight(28);
-        tableCustom.setShowGrid(true);
-        jScrollPane7.setViewportView(tableCustom);
-        if (tableCustom.getColumnModel().getColumnCount() > 0) {
-            tableCustom.getColumnModel().getColumn(0).setMinWidth(5);
-            tableCustom.getColumnModel().getColumn(0).setPreferredWidth(40);
-            tableCustom.getColumnModel().getColumn(0).setMaxWidth(100);
-            tableCustom.getColumnModel().getColumn(2).setResizable(false);
-        }
-
-        btnFindCustom.setText("Tìm kiếm");
-        btnFindCustom.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnFindCustomActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jplGuestLayout = new javax.swing.GroupLayout(jplGuest);
-        jplGuest.setLayout(jplGuestLayout);
-        jplGuestLayout.setHorizontalGroup(
-            jplGuestLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 1076, Short.MAX_VALUE)
-            .addGroup(jplGuestLayout.createSequentialGroup()
-                .addGap(50, 50, 50)
-                .addComponent(btnFindCustom, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jplGuestLayout.setVerticalGroup(
-            jplGuestLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jplGuestLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btnFindCustom, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 411, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(548, Short.MAX_VALUE))
-        );
-
-        jTabbedPane1.addTab("Quản lý khách hàng", jplGuest);
 
         jlbGender.setText("Giới tính: ");
 
@@ -926,11 +876,11 @@ public class AppManager extends javax.swing.JFrame {
 
             },
             new String [] {
-                "STT", "Họ và tên", "Giới tính", "Email", "Số điện thoại", "Địa chỉ", "Quyền", "Mật khẩu", "Ngày tạo", "Ngày update", "Trạng thái"
+                "STT", "ID nhân viên", "Họ và tên", "Giới tính", "Email", "Số điện thoại", "Địa chỉ", "Quyền", "Mật khẩu", "Ngày tạo", "Ngày update", "Trạng thái"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, false, false, true
+                false, true, false, false, false, false, false, false, false, false, false, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -944,10 +894,10 @@ public class AppManager extends javax.swing.JFrame {
             tableStaff.getColumnModel().getColumn(0).setMinWidth(5);
             tableStaff.getColumnModel().getColumn(0).setPreferredWidth(40);
             tableStaff.getColumnModel().getColumn(0).setMaxWidth(100);
-            tableStaff.getColumnModel().getColumn(2).setResizable(false);
-            tableStaff.getColumnModel().getColumn(6).setMinWidth(50);
-            tableStaff.getColumnModel().getColumn(6).setPreferredWidth(70);
-            tableStaff.getColumnModel().getColumn(6).setMaxWidth(100);
+            tableStaff.getColumnModel().getColumn(3).setResizable(false);
+            tableStaff.getColumnModel().getColumn(7).setMinWidth(50);
+            tableStaff.getColumnModel().getColumn(7).setPreferredWidth(70);
+            tableStaff.getColumnModel().getColumn(7).setMaxWidth(100);
         }
 
         jLabel9.setText("Trạng thái:");
@@ -984,6 +934,32 @@ public class AppManager extends javax.swing.JFrame {
         jLabel13.setText("Mật Khẩu:");
 
         cbStatusStaff.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Đang làm", "Nghỉ việc" }));
+        cbStatusStaff.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbStatusStaffActionPerformed(evt);
+            }
+        });
+
+        btnConsulting.setText("List Consulting");
+        btnConsulting.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConsultingActionPerformed(evt);
+            }
+        });
+
+        btnWarhouse.setText("List Warehouse");
+        btnWarhouse.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnWarhouseActionPerformed(evt);
+            }
+        });
+
+        btnCarrier.setText("List Carrier");
+        btnCarrier.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCarrierActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jplStaffLayout = new javax.swing.GroupLayout(jplStaff);
         jplStaff.setLayout(jplStaffLayout);
@@ -1002,23 +978,25 @@ public class AppManager extends javax.swing.JFrame {
                     .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(51, 51, 51)
                 .addGroup(jplStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jplStaffLayout.createSequentialGroup()
-                        .addGroup(jplStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtAddress, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
-                            .addComponent(txtPhonenumber, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
-                            .addComponent(txtEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
-                            .addComponent(txtFullname, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
-                            .addComponent(boxGender, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtPassword))
-                        .addGap(100, 100, 100)
-                        .addGroup(jplStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnInsertStaff, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnUpdateStaff, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnResetStaff, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnFindStaff, javax.swing.GroupLayout.Alignment.TRAILING)))
+                    .addGroup(jplStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(txtAddress, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
+                        .addComponent(txtPhonenumber, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
+                        .addComponent(txtEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
+                        .addComponent(txtFullname, javax.swing.GroupLayout.DEFAULT_SIZE, 350, Short.MAX_VALUE)
+                        .addComponent(boxGender, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtPassword))
                     .addComponent(boxRole, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(cbStatusStaff, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(254, 334, Short.MAX_VALUE))
+                .addGap(100, 100, 100)
+                .addGroup(jplStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(btnUpdateStaff, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnFindStaff, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnResetStaff, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnCarrier, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnWarhouse, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnConsulting, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnInsertStaff, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jplStaffLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane4)
@@ -1044,11 +1022,6 @@ public class AppManager extends javax.swing.JFrame {
                             .addComponent(boxGender, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGroup(jplStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jplStaffLayout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(btnFindStaff, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnResetStaff, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jplStaffLayout.createSequentialGroup()
                         .addGap(1, 1, 1)
                         .addGroup(jplStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1064,98 +1037,83 @@ public class AppManager extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(jplStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(boxRole, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(18, 18, 18)
-                .addGroup(jplStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jplStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cbStatusStaff, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(boxRole, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jplStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jplStaffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cbStatusStaff, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jplStaffLayout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(btnFindStaff, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnResetStaff, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnConsulting, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnWarhouse, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnCarrier, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(34, 34, 34)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(130, Short.MAX_VALUE))
+                .addContainerGap(131, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Quản lý nhân viên", jplStaff);
 
-        tableFeedback.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
+        jLabel6.setBackground(new java.awt.Color(153, 255, 255));
+        jLabel6.setFont(new java.awt.Font("Arial", 0, 36)); // NOI18N
+        jLabel6.setText("Tổng doanh thu:");
+        jLabel6.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
-            },
-            new String [] {
-                "STT", "Tên tài khoản", "Tên khách hàng", "SĐT", "Địa chỉ", "Nội Dung", "SĐT", "Ngày tạo"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, true, true, true, false, false, false
-            };
+        jLabel10.setFont(new java.awt.Font("Arial", 0, 36)); // NOI18N
+        jLabel10.setText("Tổng tiền nhập hàng:");
 
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        tableFeedback.setRowHeight(30);
-        tableFeedback.setShowGrid(true);
-        jScrollPane5.setViewportView(tableFeedback);
-        if (tableFeedback.getColumnModel().getColumnCount() > 0) {
-            tableFeedback.getColumnModel().getColumn(0).setMinWidth(5);
-            tableFeedback.getColumnModel().getColumn(0).setPreferredWidth(50);
-            tableFeedback.getColumnModel().getColumn(0).setMaxWidth(100);
-            tableFeedback.getColumnModel().getColumn(1).setMinWidth(100);
-            tableFeedback.getColumnModel().getColumn(1).setPreferredWidth(150);
-            tableFeedback.getColumnModel().getColumn(1).setMaxWidth(200);
-            tableFeedback.getColumnModel().getColumn(6).setMinWidth(100);
-            tableFeedback.getColumnModel().getColumn(6).setPreferredWidth(120);
-            tableFeedback.getColumnModel().getColumn(6).setMaxWidth(150);
-            tableFeedback.getColumnModel().getColumn(7).setMinWidth(100);
-            tableFeedback.getColumnModel().getColumn(7).setPreferredWidth(160);
-            tableFeedback.getColumnModel().getColumn(7).setMaxWidth(200);
-        }
+        jLabel11.setFont(new java.awt.Font("Arial", 0, 36)); // NOI18N
+        jLabel11.setText("Tiền lãi:");
 
-        btnFindResponse.setText("Tìm kiếm");
-        btnFindResponse.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnFindResponseActionPerformed(evt);
-            }
-        });
+        jlbTotalRevenue.setFont(new java.awt.Font("Arial", 0, 36)); // NOI18N
 
-        javax.swing.GroupLayout jplResponseLayout = new javax.swing.GroupLayout(jplResponse);
-        jplResponse.setLayout(jplResponseLayout);
-        jplResponseLayout.setHorizontalGroup(
-            jplResponseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jplResponseLayout.createSequentialGroup()
-                .addGroup(jplResponseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jplResponseLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 955, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jplResponseLayout.createSequentialGroup()
-                        .addGap(78, 78, 78)
-                        .addComponent(btnFindResponse, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(111, Short.MAX_VALUE))
-        );
-        jplResponseLayout.setVerticalGroup(
-            jplResponseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jplResponseLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btnFindResponse, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(523, Short.MAX_VALUE))
-        );
+        jlbToTalEntered.setFont(new java.awt.Font("Arial", 0, 36)); // NOI18N
 
-        jTabbedPane1.addTab("Quản lý Phản hồi", jplResponse);
+        jlbInterest.setFont(new java.awt.Font("Arial", 0, 36)); // NOI18N
 
         javax.swing.GroupLayout jplStatisticLayout = new javax.swing.GroupLayout(jplStatistic);
         jplStatistic.setLayout(jplStatisticLayout);
         jplStatisticLayout.setHorizontalGroup(
             jplStatisticLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1076, Short.MAX_VALUE)
+            .addGroup(jplStatisticLayout.createSequentialGroup()
+                .addGap(140, 140, 140)
+                .addGroup(jplStatisticLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel10)
+                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 342, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 342, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jplStatisticLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jlbInterest, javax.swing.GroupLayout.PREFERRED_SIZE, 390, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jlbToTalEntered, javax.swing.GroupLayout.PREFERRED_SIZE, 390, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jlbTotalRevenue, javax.swing.GroupLayout.PREFERRED_SIZE, 390, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(389, Short.MAX_VALUE))
         );
         jplStatisticLayout.setVerticalGroup(
             jplStatisticLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1022, Short.MAX_VALUE)
+            .addGroup(jplStatisticLayout.createSequentialGroup()
+                .addGap(136, 136, 136)
+                .addGroup(jplStatisticLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jlbTotalRevenue, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jplStatisticLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jlbToTalEntered, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jplStatisticLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jlbInterest, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(484, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Thống kê", jplStatistic);
@@ -1204,13 +1162,10 @@ public class AppManager extends javax.swing.JFrame {
 
         tableSupplier.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null}
+
             },
             new String [] {
-                "STT", "Tên nhà cung cấp", "SĐT", "Email", "Địa chỉ", "Ngày tạo", "Ngày sửa"
+                "STT", "ID nhà cung cấp", "Tên nhà cung cấp", "SĐT", "Email", "Địa chỉ", "Ngày tạo", "Người tạo", "Ngày sửa", "Người sửa"
             }
         ));
         jScrollPane3.setViewportView(tableSupplier);
@@ -1242,8 +1197,8 @@ public class AppManager extends javax.swing.JFrame {
                             .addComponent(btnFindSupplier, javax.swing.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)))
                     .addGroup(jplSupplierLayout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 828, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(238, Short.MAX_VALUE))
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 953, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(316, Short.MAX_VALUE))
         );
         jplSupplierLayout.setVerticalGroup(
             jplSupplierLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1270,7 +1225,7 @@ public class AppManager extends javax.swing.JFrame {
                             .addGroup(jplSupplierLayout.createSequentialGroup()
                                 .addGap(11, 11, 11)
                                 .addComponent(btnUpdateSupplier, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 2, Short.MAX_VALUE)))
+                        .addGap(0, 3, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jplSupplierLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnFindSupplier, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1281,76 +1236,207 @@ public class AppManager extends javax.swing.JFrame {
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(25, 25, 25)
                 .addComponent(btnResetSupplier, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(47, 47, 47)
+                .addGap(51, 51, 51)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 413, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(302, Short.MAX_VALUE))
+                .addContainerGap(298, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Quản lý nhà cung cấp", jplSupplier);
+
+        tableCustom.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "STT", "ID khách hàng", "Họ và tên", "Giới tính", "Email", "Số điện thoại", "Địa chỉ", "Ngày tạo", "Người tạo", "Ngày update", "Người sửa"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, true, false, false, false, false, false, false, true, false, true
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tableCustom.setRowHeight(28);
+        tableCustom.setShowGrid(true);
+        jScrollPane7.setViewportView(tableCustom);
+        if (tableCustom.getColumnModel().getColumnCount() > 0) {
+            tableCustom.getColumnModel().getColumn(0).setMinWidth(5);
+            tableCustom.getColumnModel().getColumn(0).setPreferredWidth(40);
+            tableCustom.getColumnModel().getColumn(0).setMaxWidth(100);
+            tableCustom.getColumnModel().getColumn(3).setResizable(false);
+        }
+
+        jLabel23.setText("Tên khách hàng:");
+
+        jLabel24.setText("Email khách hàng:");
+
+        jLabel25.setText("SĐT khách hàng: ");
+
+        jLabel26.setText("Địa chỉ khách hàng:");
+
+        txtPhoneCustom.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtPhoneCustomActionPerformed(evt);
+            }
+        });
+
+        jLabel29.setText("Giới tính");
+
+        cbGenderCustom.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Nam", "Nữ" }));
+
+        btnFindCustom.setText("Tìm kiếm");
+        btnFindCustom.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnFindCustomActionPerformed(evt);
+            }
+        });
+
+        btnEditCustom.setText("Sửa");
+        btnEditCustom.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditCustomActionPerformed(evt);
+            }
+        });
+
+        btnResetCustom.setText("Reset");
+        btnResetCustom.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetCustomActionPerformed(evt);
+            }
+        });
+
+        btnAddCustom.setText("Thêm");
+        btnAddCustom.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddCustomActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel12Layout = new javax.swing.GroupLayout(jPanel12);
+        jPanel12.setLayout(jPanel12Layout);
+        jPanel12Layout.setHorizontalGroup(
+            jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel12Layout.createSequentialGroup()
+                .addGap(68, 68, 68)
+                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel12Layout.createSequentialGroup()
+                        .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(62, 62, 62)
+                        .addComponent(txtNameCustom, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel12Layout.createSequentialGroup()
+                        .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel29, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(62, 62, 62)
+                        .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtAddressCustom, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtPhoneCustom, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtEmailCustom, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cbGenderCustom, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 122, Short.MAX_VALUE)
+                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(btnFindCustom, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
+                    .addComponent(btnEditCustom, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnResetCustom, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnAddCustom, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(43, 43, 43))
+        );
+        jPanel12Layout.setVerticalGroup(
+            jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel12Layout.createSequentialGroup()
+                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel12Layout.createSequentialGroup()
+                        .addGap(25, 25, 25)
+                        .addComponent(btnAddCustom, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel12Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtNameCustom, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)))
+                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel12Layout.createSequentialGroup()
+                        .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel29, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(cbGenderCustom, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtEmailCustom, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtPhoneCustom, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtAddressCustom, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel12Layout.createSequentialGroup()
+                        .addGap(15, 15, 15)
+                        .addComponent(btnFindCustom, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnEditCustom, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(24, 24, 24)
+                        .addComponent(btnResetCustom, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(61, 61, 61))
+        );
+
+        javax.swing.GroupLayout jplGuestLayout = new javax.swing.GroupLayout(jplGuest);
+        jplGuest.setLayout(jplGuestLayout);
+        jplGuestLayout.setHorizontalGroup(
+            jplGuestLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jplGuestLayout.createSequentialGroup()
+                .addGap(50, 50, 50)
+                .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(428, Short.MAX_VALUE))
+            .addGroup(jplGuestLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 1259, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jplGuestLayout.setVerticalGroup(
+            jplGuestLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jplGuestLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 411, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(269, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Quản lý khách hàng", jplGuest);
 
         tableBillExport.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "STT", "Tên khách hàng", "Email khách hàng", "SĐT", "Địa chỉ khách hàng", "Ghi chú", "Tổng tiền ", "Ngày tạo", "Người tạo", "Người giao"
+                "STT", "Tên khách hàng", "Giới tính", "Email khách hàng", "SĐT", "Địa chỉ khách hàng", "Ghi chú", "Tổng tiền ", "Người giao hàng", "Ngày mượn", "Ngày trả", "Ngày tạo", "Người tạo", "Ngày sửa", "Người sửa"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, true, true
+                false, false, true, false, false, false, false, false, true, true, true, true, true, true, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane11.setViewportView(tableBillExport);
+        jScrollPane10.setViewportView(tableBillExport);
         if (tableBillExport.getColumnModel().getColumnCount() > 0) {
             tableBillExport.getColumnModel().getColumn(0).setMinWidth(5);
             tableBillExport.getColumnModel().getColumn(0).setPreferredWidth(50);
             tableBillExport.getColumnModel().getColumn(0).setMaxWidth(100);
-        }
-
-        javax.swing.GroupLayout jplBillExportLayout = new javax.swing.GroupLayout(jplBillExport);
-        jplBillExport.setLayout(jplBillExportLayout);
-        jplBillExportLayout.setHorizontalGroup(
-            jplBillExportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jplBillExportLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane11, javax.swing.GroupLayout.DEFAULT_SIZE, 849, Short.MAX_VALUE)
-                .addGap(212, 212, 212))
-        );
-        jplBillExportLayout.setVerticalGroup(
-            jplBillExportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jplBillExportLayout.createSequentialGroup()
-                .addGap(63, 63, 63)
-                .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(651, Short.MAX_VALUE))
-        );
-
-        jplBillManage.addTab("Hóa đơn xuất", jplBillExport);
-
-        tableOrder.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "STT", "Tên khách hàng", "Email khách hàng", "SĐT", "Địa chỉ khách hàng", "Ghi chú", "Tổng tiền ", "Ngày tạo", "Trạng thái"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false, true
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jScrollPane10.setViewportView(tableOrder);
-        if (tableOrder.getColumnModel().getColumnCount() > 0) {
-            tableOrder.getColumnModel().getColumn(0).setMinWidth(5);
-            tableOrder.getColumnModel().getColumn(0).setPreferredWidth(50);
-            tableOrder.getColumnModel().getColumn(0).setMaxWidth(100);
+            tableBillExport.getColumnModel().getColumn(8).setResizable(false);
+            tableBillExport.getColumnModel().getColumn(9).setResizable(false);
+            tableBillExport.getColumnModel().getColumn(12).setResizable(false);
         }
 
         btnDeleteOrder.setText("Xóa");
@@ -1383,40 +1469,38 @@ public class AppManager extends javax.swing.JFrame {
             }
         });
 
-        jLabel15.setText("Tên khách hàng:");
-
-        jLabel16.setText("Email khách hàng:");
-
-        jLabel17.setText("SĐT khách hàng: ");
-
-        jLabel18.setText("Địa chỉ khách hàng:");
-
-        jLabel19.setText("Ghi chú:");
-
-        txtFullnameOrder.setEditable(false);
-
-        txtEmailOrder.setEditable(false);
-
-        txtPhoneNumberOrder.setEditable(false);
-        txtPhoneNumberOrder.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtPhoneNumberOrderActionPerformed(evt);
-            }
-        });
-
-        txtAddressOrder.setEditable(false);
-
-        txtNoteOrder.setEditable(false);
-        txtNoteOrder.setColumns(20);
-        txtNoteOrder.setLineWrap(true);
-        txtNoteOrder.setRows(5);
-        txtNoteOrder2.setViewportView(txtNoteOrder);
+        jLabel15.setText("ID khách hàng");
 
         btnCreateBillExport.setText("Tạo hóa đơn xuất");
-        btnCreateBillExport.setEnabled(false);
         btnCreateBillExport.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCreateBillExportActionPerformed(evt);
+            }
+        });
+
+        jLabel14.setText("ID nhân viên giao hàng: ");
+
+        jLabel21.setText("Ngày mượn (yyyy-mm-dd)");
+
+        jtfDateStart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jtfDateStartActionPerformed(evt);
+            }
+        });
+
+        jLabel22.setText("Ngày trả (yyyy-mm-dd)");
+
+        jLabel16.setText("Note");
+
+        txtNoteBillExport.setColumns(20);
+        txtNoteBillExport.setRows(5);
+        jScrollPane5.setViewportView(txtNoteBillExport);
+
+        btnUpdateBillExport.setText("Sửa");
+        btnUpdateBillExport.setEnabled(false);
+        btnUpdateBillExport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateBillExportActionPerformed(evt);
             }
         });
 
@@ -1425,114 +1509,117 @@ public class AppManager extends javax.swing.JFrame {
         jPanel11Layout.setHorizontalGroup(
             jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel11Layout.createSequentialGroup()
-                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel11Layout.createSequentialGroup()
-                        .addGap(68, 68, 68)
-                        .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel11Layout.createSequentialGroup()
-                                .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(txtAddressOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel11Layout.createSequentialGroup()
-                                .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(62, 62, 62)
-                                .addComponent(txtNoteOrder2))
-                            .addGroup(jPanel11Layout.createSequentialGroup()
-                                .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(txtPhoneNumberOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel11Layout.createSequentialGroup()
-                                .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(txtEmailOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel11Layout.createSequentialGroup()
-                                .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(62, 62, 62)
-                                .addComponent(txtFullnameOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel11Layout.createSequentialGroup()
-                        .addGap(28, 28, 28)
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel11Layout.createSequentialGroup()
+                        .addGap(59, 59, 59)
                         .addComponent(btnCreateBillExport, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(54, 54, 54)
-                        .addComponent(btnDeleteOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(55, 55, 55)
-                        .addComponent(btnShowProductOrder)
-                        .addGap(52, 52, 52)
-                        .addComponent(btnFindOrder)
-                        .addGap(52, 52, 52)
-                        .addComponent(btnResetOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(128, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnDeleteOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel11Layout.createSequentialGroup()
+                        .addGap(68, 68, 68)
+                        .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel11Layout.createSequentialGroup()
+                                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(jPanel11Layout.createSequentialGroup()
+                                        .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(62, 62, 62))
+                                    .addGroup(jPanel11Layout.createSequentialGroup()
+                                        .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGap(33, 33, 33)))
+                                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtIDCustom, javax.swing.GroupLayout.DEFAULT_SIZE, 206, Short.MAX_VALUE)
+                                    .addComponent(txtIDCarrierBillExport)))
+                            .addGroup(jPanel11Layout.createSequentialGroup()
+                                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel22, javax.swing.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE)
+                                    .addComponent(jLabel21, javax.swing.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE)
+                                    .addComponent(jLabel16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(33, 33, 33)
+                                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jtfDateStart, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jtfDateEnd, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnUpdateBillExport, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                .addGap(59, 59, 59)
+                .addComponent(btnShowProductOrder)
+                .addGap(62, 62, 62)
+                .addComponent(btnFindOrder)
+                .addGap(50, 50, 50)
+                .addComponent(btnResetOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(183, Short.MAX_VALUE))
         );
         jPanel11Layout.setVerticalGroup(
             jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel11Layout.createSequentialGroup()
-                .addGap(25, 25, 25)
+                .addGap(26, 26, 26)
                 .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtFullnameOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtIDCustom, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtEmailOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtPhoneNumberOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtAddressOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
+                    .addComponent(txtIDCarrierBillExport))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtNoteOrder2, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel11Layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addComponent(btnCreateBillExport, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel11Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnShowProductOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnDeleteOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(btnFindOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(btnResetOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addGap(24, 24, 24))
-        );
-
-        javax.swing.GroupLayout jplBillLayout = new javax.swing.GroupLayout(jplBill);
-        jplBill.setLayout(jplBillLayout);
-        jplBillLayout.setHorizontalGroup(
-            jplBillLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jplBillLayout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addGroup(jplBillLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane10))
-                .addGap(51, 51, 51))
-        );
-        jplBillLayout.setVerticalGroup(
-            jplBillLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jplBillLayout.createSequentialGroup()
-                .addGap(39, 39, 39)
-                .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jtfDateEnd, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel22, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(271, Short.MAX_VALUE))
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jtfDateStart, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel11Layout.createSequentialGroup()
+                        .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 62, Short.MAX_VALUE))
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnCreateBillExport, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnDeleteOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnShowProductOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnFindOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnResetOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnUpdateBillExport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
-        jplBillManage.addTab("Quản lý đơn hàng", jplBill);
+        javax.swing.GroupLayout jplBillExportLayout = new javax.swing.GroupLayout(jplBillExport);
+        jplBillExport.setLayout(jplBillExportLayout);
+        jplBillExportLayout.setHorizontalGroup(
+            jplBillExportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jplBillExportLayout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addGroup(jplBillExportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jplBillExportLayout.createSequentialGroup()
+                        .addComponent(jScrollPane10)
+                        .addContainerGap())
+                    .addGroup(jplBillExportLayout.createSequentialGroup()
+                        .addComponent(jPanel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(195, 195, 195))))
+        );
+        jplBillExportLayout.setVerticalGroup(
+            jplBillExportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jplBillExportLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(396, Short.MAX_VALUE))
+        );
+
+        jplBillManage.addTab("Hóa đơn xuất", jplBillExport);
 
         tableBillImport.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "STT", "Nhà cung cấp", "Sản phẩm", "Số lượng", "Giá thành", "Người giao hàng", "Ngày tạo", "Người tạo", "Trạng thái"
+                "STT", "Nhà cung cấp", "Tổng tiền", "Người giao hàng", "Ngày tạo", "Người tạo", "Ngày sửa", "Người sửa"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, true, true
+                false, false, false, false, false, true, true, true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -1546,15 +1633,9 @@ public class AppManager extends javax.swing.JFrame {
             tableBillImport.getColumnModel().getColumn(0).setMaxWidth(100);
         }
 
-        jLabel5.setText("Nhà cung cấp:");
+        jLabel5.setText("ID Nhà cung cấp:");
 
-        jLabel6.setText("Số lượng:");
-
-        jLabel10.setText("Giá thành:");
-
-        jLabel11.setText("Sản phẩm:");
-
-        jLabel12.setText("Người giao hàng:");
+        jLabel12.setText("ID nhân viên giao hàng:");
 
         btnEditBillImport.setText("Sửa");
         btnEditBillImport.setEnabled(false);
@@ -1593,11 +1674,17 @@ public class AppManager extends javax.swing.JFrame {
             }
         });
 
-        btnSuccessBillImport.setText("Xuất hóa đơn");
-        btnSuccessBillImport.setEnabled(false);
-        btnSuccessBillImport.addActionListener(new java.awt.event.ActionListener() {
+        btnShowListBillImport.setText("Show List Order");
+        btnShowListBillImport.setEnabled(false);
+        btnShowListBillImport.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSuccessBillImportActionPerformed(evt);
+                btnShowListBillImportActionPerformed(evt);
+            }
+        });
+
+        txtIDSupplier.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtIDSupplierActionPerformed(evt);
             }
         });
 
@@ -1607,66 +1694,60 @@ public class AppManager extends javax.swing.JFrame {
             jplBillImportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jplBillImportLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane12, javax.swing.GroupLayout.DEFAULT_SIZE, 849, Short.MAX_VALUE)
+                .addComponent(jScrollPane12, javax.swing.GroupLayout.DEFAULT_SIZE, 1052, Short.MAX_VALUE)
                 .addGap(212, 212, 212))
             .addGroup(jplBillImportLayout.createSequentialGroup()
-                .addGap(40, 40, 40)
                 .addGroup(jplBillImportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(65, 65, 65)
-                .addGroup(jplBillImportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(cbCarrierBillImport, 0, 168, Short.MAX_VALUE)
-                    .addComponent(cbProduct, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(cbSupplier, 0, 168, Short.MAX_VALUE)
-                    .addComponent(txtPriceProduct)
-                    .addComponent(txtCountProduct))
-                .addGap(141, 141, 141)
-                .addGroup(jplBillImportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnSuccessBillImport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnAddBillImport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnEditBillImport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnDeleteBillImport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnResetBillImport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnFindBillImport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jplBillImportLayout.createSequentialGroup()
+                        .addGap(42, 42, 42)
+                        .addComponent(btnShowListBillImport))
+                    .addGroup(jplBillImportLayout.createSequentialGroup()
+                        .addGap(42, 42, 42)
+                        .addComponent(btnAddBillImport, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jplBillImportLayout.createSequentialGroup()
+                        .addGap(38, 38, 38)
+                        .addGroup(jplBillImportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, 131, Short.MAX_VALUE))))
+                .addGap(31, 31, 31)
+                .addGroup(jplBillImportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jplBillImportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(jplBillImportLayout.createSequentialGroup()
+                            .addComponent(btnFindBillImport, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(67, 67, 67)
+                            .addComponent(btnResetBillImport, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jplBillImportLayout.createSequentialGroup()
+                            .addComponent(btnEditBillImport, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(67, 67, 67)
+                            .addComponent(btnDeleteBillImport, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtIDSupplier, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtIDCarrierBillImport, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jplBillImportLayout.setVerticalGroup(
             jplBillImportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jplBillImportLayout.createSequentialGroup()
                 .addGap(24, 24, 24)
-                .addGroup(jplBillImportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cbSupplier, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnAddBillImport, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jplBillImportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cbProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnEditBillImport, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(22, 22, 22)
-                .addGroup(jplBillImportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnDeleteBillImport, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtCountProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 19, Short.MAX_VALUE)
                 .addGroup(jplBillImportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-                    .addComponent(btnFindBillImport, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
-                    .addComponent(txtPriceProduct))
-                .addGap(20, 20, 20)
-                .addGroup(jplBillImportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(cbCarrierBillImport, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnResetBillImport, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtIDSupplier)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
-                .addComponent(btnSuccessBillImport, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(39, 39, 39)
+                .addGroup(jplBillImportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
+                    .addComponent(txtIDCarrierBillImport))
+                .addGap(18, 18, 18)
+                .addGroup(jplBillImportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAddBillImport, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnEditBillImport, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnDeleteBillImport, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jplBillImportLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnShowListBillImport, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnFindBillImport, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnResetBillImport, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
                 .addComponent(jScrollPane12, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(358, Short.MAX_VALUE))
+                .addContainerGap(462, Short.MAX_VALUE))
         );
 
         jplBillManage.addTab("Hóa đơn nhập", jplBillImport);
@@ -1679,7 +1760,7 @@ public class AppManager extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1093, Short.MAX_VALUE)
+                .addComponent(jTabbedPane1)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -1693,6 +1774,529 @@ public class AppManager extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnShowListBillImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowListBillImportActionPerformed
+        // TODO add your handling code here:
+        int selectedIndex = tableBillImport.getSelectedRow();
+        if(selectedIndex >= 0) {
+            int billID = billImportList.get(selectedIndex).getId();
+            billImportDetailFrm = new BillImportDetailFrm(this, rootPaneCheckingEnabled);
+            billImportDetailFrm.getIDBill(billID, id_user);
+            billImportDetailFrm.setVisible(true);
+            showBillImport();
+            showProduct();
+            showStatistical();
+        }
+    }//GEN-LAST:event_btnShowListBillImportActionPerformed
+
+    private void btnFindBillImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindBillImportActionPerformed
+        // TODO add your handling code here:
+        String input = JOptionPane.showInputDialog(this,"Nhập tên nhà cung cấp cần tìm kiếm!");
+        if(input != null && input.length() > 0 ){
+            billImportList = BillImportController.findByNameSupplier(input);
+
+            tableModelBillImport.setRowCount(0);
+
+            billImportList.forEach((billImport) -> {
+            tableModelBillImport.addRow(new Object[] {tableModelBillImport.getRowCount() + 1,
+                billImport.getNameSupplier(),
+                billImport.getTotal(),
+                billImport.getNameCarrier(),
+                billImport.getCreatedAt(),
+                billImport.getNameStaffCreated(),
+                billImport.getUpdatedAt(),
+                billImport.getNameStaffUpdated()
+            });
+        });
+        } else {
+            showBillImport();
+        }
+    }//GEN-LAST:event_btnFindBillImportActionPerformed
+
+    private void btnDeleteBillImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteBillImportActionPerformed
+        // TODO add your handling code here:
+        int selectedIndex = tableBillImport.getSelectedRow();
+        if (selectedIndex >= 0 ){
+            BillImport billImport = billImportList.get(selectedIndex);
+
+            int option = JOptionPane.showConfirmDialog(this, "Bạn có chắn chắn muốn xóa không?");
+
+            if(option == 0){
+                BillImportController.delete(billImport.getId());
+
+                txtIDSupplier.setText("");
+                txtIDCarrierBillImport.setText("");
+
+                btnEditBillImport.setEnabled(false);
+                btnDeleteBillImport.setEnabled(false);
+                btnShowListBillImport.setEnabled(false);
+                JOptionPane.showMessageDialog(rootPane, "Bạn đã xóa thành công");
+                showBillImport();
+            }
+        }
+    }//GEN-LAST:event_btnDeleteBillImportActionPerformed
+
+    private void btnResetBillImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetBillImportActionPerformed
+        // TODO add your handling code here:
+        txtIDSupplier.setText("");
+        txtIDCarrierBillImport.setText("");
+        
+        txtIDSupplier.setEditable(true);
+        btnEditBillImport.setEnabled(false);
+        btnDeleteBillImport.setEnabled(false);
+
+        showBillImport();
+    }//GEN-LAST:event_btnResetBillImportActionPerformed
+
+    private void btnAddBillImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddBillImportActionPerformed
+        // TODO add your handling code here:
+        int idSupplier = 0, idCarrier = 0;
+        boolean isOK = true;
+        
+        if(txtIDSupplier.getText().length() > 0) {
+            idSupplier = Integer.valueOf(txtIDSupplier.getText());
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập ID nhà cung cấp");
+        }
+        
+        if(txtIDCarrierBillImport.getText().length() > 0) {
+            idCarrier = Integer.valueOf(txtIDCarrierBillImport.getText());
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập ID nhân viên giao hàng");
+        }
+        if(isOK) {
+            if(SupplierController.findByIDSupplier(idSupplier)) {
+                if(StaffController.findAllCarrierOnWorkByID(idCarrier)) {
+                    Date dateNow = new Date();
+                    SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+                    BillImport billImport = new BillImport(0, id_user, id_user, idSupplier, 
+                            idCarrier, formatDate.format(dateNow), formatDate.format(dateNow));
+
+                    BillImportController.insert(billImport);
+                    JOptionPane.showMessageDialog(rootPane, "Bạn đã thêm hóa đơn nhập thành công");
+
+                    txtIDSupplier.setText("");
+                    txtIDCarrierBillImport.setText("");
+
+                    showBillImport();
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "ID nhân viên không tồn tại hoặc đã nghỉ việc!");
+                }
+            } else {
+                JOptionPane.showMessageDialog(rootPane, "ID nhà cung cấp không tồn tại");
+            }
+        }
+    }//GEN-LAST:event_btnAddBillImportActionPerformed
+
+    private void btnEditBillImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditBillImportActionPerformed
+        // TODO add your handling code here:
+        int idSupplier = 0, idCarrier = 0, id = 0;
+
+        int selectedIndex = tableBillImport.getSelectedRow();
+        if(selectedIndex >= 0) {
+            id = supplierList.get(selectedIndex).getId();
+            idSupplier = Integer.valueOf(txtIDSupplier.getText());
+            idCarrier = Integer.valueOf(txtIDCarrierBillImport.getText());
+            
+            if(StaffController.findAllCarrierOnWorkByID(idCarrier)) {
+                Date dateNow = new Date();
+                SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+                BillImport billImport = new BillImport(id, id_user, idSupplier, 
+                        idCarrier, formatDate.format(dateNow));
+
+                BillImportController.update(billImport);
+                JOptionPane.showMessageDialog(rootPane, "Bạn đã sửa hóa đơn nhập thành công");
+
+                txtIDSupplier.setText("");
+                txtIDCarrierBillImport.setText("");
+
+                showBillImport();
+            } else {
+                JOptionPane.showMessageDialog(rootPane, "ID nhân viên không tồn tại hoặc đã nghỉ việc!");
+            }
+        }
+    }//GEN-LAST:event_btnEditBillImportActionPerformed
+
+    private void btnResetSupplierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetSupplierActionPerformed
+        // TODO add your handling code here:
+        txtSupplier.setText("");
+        txtEmailSupplier.setText("");
+        txtPhoneSupplier.setText("");
+        txtAddressSupplier.setText("");
+
+        btnUpdateSupplier.setEnabled(false);
+        showSupplier();
+    }//GEN-LAST:event_btnResetSupplierActionPerformed
+
+    private void btnFindSupplierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindSupplierActionPerformed
+        // TODO add your handling code here:
+        String input = JOptionPane.showInputDialog(this,"Nhập tên nhà cung cấp cần tìm kiếm:");
+        if(input != null && input.length() > 0 ){
+            supplierList = SupplierController.findByNameSupplier(input);
+
+            tableModelSupplier.setRowCount(0);
+
+            supplierList.forEach((supplier) -> {
+            tableModelSupplier.addRow(new Object[] {tableModelSupplier.getRowCount() + 1,
+                supplier.getId(),
+                supplier.getName(),
+                supplier.getPhoneNumber(),
+                supplier.getEmail(),
+                supplier.getAddress(),
+                supplier.getCreatedAt(),
+                supplier.getNameStaffCreated(),
+                supplier.getUpdatedAt(),
+                supplier.getNameStaffUpdated()
+            });
+        });
+        } else {
+            showSupplier();
+        }
+    }//GEN-LAST:event_btnFindSupplierActionPerformed
+
+    private void btnUpdateSupplierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateSupplierActionPerformed
+        // TODO add your handling code here:
+        String name = null, email = null, phoneNumber = null,
+        address = null;
+        int id = 0;
+        boolean isOK = true;
+        int selectedIndex = tableSupplier.getSelectedRow();
+        if(selectedIndex >= 0) {
+            id = supplierList.get(selectedIndex).getId();
+
+            if(txtSupplier.getText().length() > 0) {
+                name = txtSupplier.getText();
+            } else {
+                isOK = false;
+                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập tên");
+            }
+
+            if(txtEmailSupplier.getText().length() > 0) {
+                email = txtEmailSupplier.getText();
+            } else {
+                isOK = false;
+                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập Email!!");
+            }
+
+            if(txtPhoneSupplier.getText().length() > 0) {
+                phoneNumber = txtPhoneSupplier.getText();
+            } else {
+                isOK = false;
+                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập SĐT");
+            }
+
+            if(txtAddressSupplier.getText().length() > 0) {
+                address = txtAddressSupplier.getText();
+            } else {
+                isOK = false;
+                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập địa chỉ");
+            }
+
+            if(isOK) {
+                Date dateNow = new Date();
+                SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                Supplier supplier = new Supplier(id, id_user, name, phoneNumber, email, address, formatDate.format(dateNow));
+
+                SupplierController.update(supplier);
+                JOptionPane.showMessageDialog(rootPane, "Bạn đã cập nhật thành công!");
+
+                txtSupplier.setText("");
+                txtEmailSupplier.setText("");
+                txtPhoneSupplier.setText("");
+                txtAddressSupplier.setText("");
+
+                btnUpdateSupplier.setEnabled(false);
+                showSupplier();
+            }
+        }
+    }//GEN-LAST:event_btnUpdateSupplierActionPerformed
+
+    private void btnAddSupplierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddSupplierActionPerformed
+        // TODO add your handling code here:
+        String name = null, email = null, phoneNumber = null,
+        address = null;
+        boolean isOK = true;
+        if(txtSupplier.getText().length() > 0) {
+            name = txtSupplier.getText();
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập tên");
+        }
+
+        if(txtEmailSupplier.getText().length() > 0) {
+            email = txtEmailSupplier.getText();
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập Email!!");
+        }
+
+        if(txtPhoneSupplier.getText().length() > 0) {
+            phoneNumber = txtPhoneSupplier.getText();
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập số điện thoại");
+        }
+
+        if(txtAddressSupplier.getText().length() > 0) {
+            address = txtAddressSupplier.getText();
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập địa chỉ");
+        }
+
+        if(isOK) {
+            Date dateNow = new Date();
+            SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+            Supplier supplier = new Supplier(id_user, id_user, name, phoneNumber, 
+                    email, address, formatDate.format(dateNow), formatDate.format(dateNow));
+
+            SupplierController.insert(supplier);
+            JOptionPane.showMessageDialog(rootPane, "Bạn đã cập nhật thành công!");
+
+            txtSupplier.setText("");
+            txtEmailSupplier.setText("");
+            txtPhoneSupplier.setText("");
+            txtAddressSupplier.setText("");
+
+            showSupplier();
+        }
+    }//GEN-LAST:event_btnAddSupplierActionPerformed
+
+    private void txtSupplierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSupplierActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtSupplierActionPerformed
+
+    private void boxRoleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boxRoleActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_boxRoleActionPerformed
+
+    private void boxGenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boxGenderActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_boxGenderActionPerformed
+
+    private void btnResetStaffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetStaffActionPerformed
+        // TODO add your handling code here:
+        txtFullname.setText("");
+        txtEmail.setText("");
+        txtPhonenumber.setText("");
+        txtAddress.setText("");
+        txtPassword.setText("");
+
+        btnUpdateStaff.setEnabled(false);
+        showStaff();
+    }//GEN-LAST:event_btnResetStaffActionPerformed
+
+    private void btnFindStaffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindStaffActionPerformed
+        // TODO add your handling code here:
+        String input = JOptionPane.showInputDialog(this,"Nhập tên người dùng cần tìm kiếm:");
+        if(input != null && input.length() > 0 ){
+            staffList = StaffController.findByFullnameStaff(input);
+
+            tableModelStaff.setRowCount(0);
+        
+            staffList.forEach((staff) -> {
+                tableModelStaff.addRow(new Object[] {tableModelStaff.getRowCount() + 1,
+                    staff.getId(),
+                    staff.getFullName(),
+                    staff.getGender(),
+                    staff.getEmail(),
+                    staff.getPhoneNumber(),
+                    staff.getAddress(),
+                    staff.getRoleName(),
+                    staff.getPassword(),
+                    staff.getCreatedAt(),
+                    staff.getUpdatedAt(),
+                    staff.getStatus()
+                });
+            });
+        } else {
+            showStaff();
+        }
+    }//GEN-LAST:event_btnFindStaffActionPerformed
+
+    private void btnUpdateStaffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateStaffActionPerformed
+        // TODO add your handling code here:
+
+        String fullname = null, gender = null, email = null, phoneNumber = null,
+        address = null, password = null, roleName = null, status = null;
+        int idRole = 0, idStaff = 0;
+        boolean isOK = true;
+        int selectedIndex = tableStaff.getSelectedRow();
+        if(selectedIndex >= 0) {
+            idStaff = staffList.get(selectedIndex).getId();
+
+            if(txtFullname.getText().length() > 0) {
+                fullname = txtFullname.getText();
+            } else {
+                isOK = false;
+                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập tên");
+            }
+
+            gender = boxGender.getSelectedItem().toString();
+
+            email = txtEmail.getText();
+
+            if(txtPhonenumber.getText().length() > 0) {
+                phoneNumber = txtPhonenumber.getText();
+            } else {
+                isOK = false;
+                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập số điện thoại");
+            }
+
+            if(txtAddress.getText().length() > 0) {
+                address = txtAddress.getText();
+            } else {
+                isOK = false;
+                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập địa chỉ");
+            }
+
+            roleName = boxRole.getSelectedItem().toString();
+            for(Role role : roleList) {
+                if(role.getName().equals(roleName)) {
+                    idRole = role.getId();
+                }
+            }
+
+            if(txtPassword.getPassword().length > 0) {
+                password = new String(txtPassword.getPassword());
+            } else {
+                isOK = false;
+                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập mật khẩu");
+            }
+
+            status = cbStatusStaff.getSelectedItem().toString();
+
+            if(isOK) {
+                Date dateNow = new Date();
+                SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                Account account = new Account(email, password);
+                AccountController.update(account);
+                
+                Staff staff = new Staff(idStaff, idRole, fullname, gender,  
+                        phoneNumber, address, formatDate.format(dateNow), status);
+                StaffController.update(staff);
+               
+                JOptionPane.showMessageDialog(rootPane, "Bạn đã cập nhật thành công!");
+            }
+        }
+
+        txtFullname.setText("");
+        txtEmail.setText("");
+        txtPhonenumber.setText("");
+        txtAddress.setText("");
+        txtPassword.setText("");
+
+        btnUpdateStaff.setEnabled(false);
+        showStaff();
+    }//GEN-LAST:event_btnUpdateStaffActionPerformed
+
+    private void btnInsertStaffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInsertStaffActionPerformed
+        // TODO add your handling code here:
+        int idRole = 0;
+        String fullname = null, gender = null, email = null, phoneNumber = null, status = null,
+        address = null, roleName = null, password = null;
+        boolean isOK = true;
+        if(txtFullname.getText().length() > 0) {
+            fullname = txtFullname.getText();
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập tên");
+        }
+
+        gender = boxGender.getSelectedItem().toString();
+        status = cbStatusStaff.getSelectedItem().toString();
+        
+        if(txtEmail.getText().length() > 0) {
+            email = txtEmail.getText();
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập Email!!");
+        }
+
+        if(txtPhonenumber.getText().length() > 0) {
+            phoneNumber = txtPhonenumber.getText();
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập so dien thoai");
+        }
+
+        if(txtAddress.getText().length() > 0) {
+            address = txtAddress.getText();
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập địa chỉ");
+        }
+
+        roleName = boxRole.getSelectedItem().toString();
+        for(Role role : roleList) {
+            if(role.getName().equals(roleName)) {
+                idRole = role.getId();
+            }
+        }
+
+        if(txtPassword.getPassword().length > 0) {
+            password = new String(txtPassword.getPassword());
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập mật khẩu");
+        }
+
+        if(isOK) {
+            Date dateNow = new Date();
+            SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            
+            Account account = new Account(email, password);
+            AccountController.insert(account);
+            
+            Staff staff = new Staff(idRole, fullname, gender, email, phoneNumber, 
+                    address, formatDate.format(dateNow), formatDate.format(dateNow), status);
+            StaffController.insert(staff);
+            JOptionPane.showMessageDialog(rootPane, "Bạn đã thêm thành công!");
+
+            txtFullname.setText("");
+            boxGender.setSelectedIndex(0);
+            txtEmail.setText("");
+            txtPhonenumber.setText("");
+            txtAddress.setText("");
+            boxRole.setSelectedIndex(0);
+            txtPassword.setText("");
+
+            btnUpdateStaff.setEnabled(false);
+            showStaff();
+        }
+    }//GEN-LAST:event_btnInsertStaffActionPerformed
+
+    private void btnFindCustomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindCustomActionPerformed
+        // TODO add your handling code here:
+        String input = JOptionPane.showInputDialog(this,"Nhập tên khách hàng cần tìm kiếm:");
+        if(input != null && input.length() > 0 ){
+            customList = CustomController.findByNameCustom(input);
+
+            tableModelCustom.setRowCount(0);
+        
+            customList.forEach((custom) -> {
+            tableModelCustom.addRow(new Object[] {tableModelCustom.getRowCount() + 1,
+                custom.getId(),
+                custom.getFullName(),
+                custom.getGender(),
+                custom.getEmail(),
+                custom.getPhoneNumber(),
+                custom.getAddress(),
+                custom.getCreated_at(),
+                custom.getNameCreatedStaff(),
+                custom.getUpdated_at(),
+                custom.getNameUpdatedStaff()
+            });
+        });
+        } else {
+            showCustom();
+        }
+    }//GEN-LAST:event_btnFindCustomActionPerformed
+
     private void btnSelectImgActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSelectImgActionPerformed
         // TODO add your handling code here:
         JFileChooser fileChooser = new JFileChooser();
@@ -1702,15 +2306,14 @@ public class AppManager extends javax.swing.JFrame {
             File file = fileChooser.getSelectedFile();
             // lấy đường dẫn file
             String pathFile = file.getAbsolutePath();
-            String[] str_arr=pathFile.replaceAll(Pattern.quote("\\"), "\\\\").split("\\\\"); //chuyển dấu \ -> \\ và cắt chuỗi bởi dấu \\
-            String pathLink = "../" + str_arr[str_arr.length - 2] + "/" + str_arr[str_arr.length - 1];
-            System.out.println(pathLink);
+            System.out.println(pathFile);
             BufferedImage b;
             try {
                 b = ImageIO.read(file);
                 jlbThumbProduct.setIcon(new ImageIcon(b.getScaledInstance(200, 200, Image.SCALE_SMOOTH)));
-                txtThumbProduct.setText(pathLink);
+                txtThumbProduct.setText(pathFile);
             } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }//GEN-LAST:event_btnSelectImgActionPerformed
@@ -1722,12 +2325,12 @@ public class AppManager extends javax.swing.JFrame {
     private void btnUpdateProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateProductActionPerformed
         // TODO add your handling code here:
 
-        String tenSP = null, danhmuc = null, gia = null, mota = null, hinhanh = null;
-        int id_Cat = 0;
+        String tenSP = null, danhmuc = null, mota = null, hinhanh = null;
+        int id = 0, id_Cat = 0, gia = 0;
         boolean isOK = true;
         int selectedIndex = tableProduct.getSelectedRow();
         if(selectedIndex >= 0) {
-            Product prd1 = products.get(selectedIndex);
+            id = products.get(selectedIndex).getId();
 
             if(txtTitleProduct.getText().length() > 0) {
                 tenSP = txtTitleProduct.getText();
@@ -1744,7 +2347,7 @@ public class AppManager extends javax.swing.JFrame {
             }
 
             if(txtPrice.getText().length() > 0) {
-                gia = txtPrice.getText();
+                gia = Integer.valueOf(txtPrice.getText());
             } else {
                 isOK = false;
                 JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập giá sản phẩm");
@@ -1767,7 +2370,8 @@ public class AppManager extends javax.swing.JFrame {
             if(isOK) {
                 Date dateNow = new Date();
                 SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                Product product = new Product(prd1.getId(), tenSP, gia, mota, hinhanh, formatDate.format(dateNow), id_Cat);
+                Product product = new Product(id, id_Cat, gia, id_user, tenSP, mota, 
+                        hinhanh, formatDate.format(dateNow));
                 ProductController.update(product);
                 JOptionPane.showMessageDialog(rootPane, "Bạn đã cập nhật thành công!");
                 txtTitleProduct.setText("");
@@ -1775,7 +2379,6 @@ public class AppManager extends javax.swing.JFrame {
                 txtDescProduct.setText("");
                 txtThumbProduct.setText("");
                 btnUpdateProduct.setEnabled(false);
-                btnDeleteProduct.setEnabled(false);
                 showProduct();
             }
         }
@@ -1786,18 +2389,28 @@ public class AppManager extends javax.swing.JFrame {
         String input = JOptionPane.showInputDialog(this,"Nhập tên sản phẩm cần tìm kiếm!");
         if(input != null && input.length() > 0 ){
             products = ProductController.findByTitleProduct(input);
-
-            tableModelProduct.setRowCount(0);
-            products.forEach((product) -> {
-                tableModelProduct.addRow(new Object[] {tableModelProduct.getRowCount() + 1,
-                    product.getTitle(),
-                    product.getCategoryName(),
-                    product.getPrice(),
-                    product.getDescription(),
-                    product.getThumbnail(),
-                    product.getCreated_at(),
-                    product.getUpdated_at()});
-        });
+            if(products.isEmpty()) {
+                JOptionPane.showMessageDialog(rootPane, "Sản phẩm không tồn tại!");
+            }
+            else {
+                tableModelProduct.setRowCount(0);
+                products.forEach((prd) -> {
+                    tableModelProduct.addRow(new Object[] {
+                        tableModelProduct.getRowCount() + 1,
+                        prd.getId(),
+                        prd.getTitle(),
+                        prd.getCategoryName(),
+                        prd.getPrice(),
+                        prd.getDescription(),
+                        prd.getThumbnail(),
+                        prd.getCount(),
+                        prd.getCreatedAt(),
+                        prd.getNameStaffCreated(),
+                        prd.getUpdatedAt(),
+                        prd.getNameStaffUpdated(),
+                    });
+                });
+            }
         } else {
             showProduct();
         }
@@ -1807,773 +2420,452 @@ public class AppManager extends javax.swing.JFrame {
         txtTitleProduct.setText("");
         txtPrice.setText("");
         txtDescProduct.setText("");
-        jlbThumbProduct.setText("");
-
+        txtThumbProduct.setText("");
+        jlbThumbProduct.setIcon(null);
+        
+//        File file = new File("");
+//        // lấy đường dẫn file
+//        String pathFile = file.getAbsolutePath();
+//        System.out.println(pathFile);
+//        BufferedImage b;
+//        try {
+//            b = ImageIO.read(file);
+//            jlbThumbProduct.setIcon(new ImageIcon(b.getScaledInstance(200, 200, Image.SCALE_SMOOTH)));
+//            txtThumbProduct.setText(pathFile);
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//        }
+        
         btnUpdateProduct.setEnabled(false);
-        btnDeleteProduct.setEnabled(false);
         showProduct();
     }//GEN-LAST:event_btnResetProductActionPerformed
 
-    private void btnDeleteProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteProductActionPerformed
-        // TODO add your handling code here:
-        int selectedIndex = tableProduct.getSelectedRow();
-        if (selectedIndex >= 0 ){
-            Product prd = products.get(selectedIndex);
-
-            int option = JOptionPane.showConfirmDialog(this, "Ban co chac chan muon xoa?");
-
-            if(option == 0){
-                ProductController.delete(prd.getId());
-
-                btnDeleteProduct.setEnabled(false);
-                JOptionPane.showMessageDialog(rootPane, "Bạn đã xóa thành công");
-                showProduct();
-            }
-        }
-    }//GEN-LAST:event_btnDeleteProductActionPerformed
-
     private void btnInsertProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInsertProductActionPerformed
         // TODO add your handling code here:
-        String title = txtTitleProduct.getText();
-        Category category = categoryList.get(boxCategory.getSelectedIndex());
-        int idCat = category.getId();
-        String price = txtPrice.getText();
-        String description = txtDescProduct.getText();
-        String thumbnail = txtThumbProduct.getText();
-        Date dateNow = new Date();
-        SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        String tenSP = null, danhmuc = null, mota = null, hinhanh = null;
+        int idCat = 0, gia = 0;
+        boolean isOK = true;
+           
+        if(txtTitleProduct.getText().length() > 0) {
+            tenSP = txtTitleProduct.getText();
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập tên sản phẩm");
+        }
 
-        Product prd = new Product(title, price, description, thumbnail, formatDate.format(dateNow), formatDate.format(dateNow), idCat, 0);
+        danhmuc = boxCategory.getSelectedItem().toString();
+        for(Category category : categoryList) {
+            if(category.getName().equals(danhmuc)) {
+                idCat = category.getId();
+            }
+        }
 
-        ProductController.insert(prd);
+        if(txtPrice.getText().length() > 0) {
+            gia = Integer.valueOf(txtPrice.getText());
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập giá sản phẩm");
+        }
 
-        txtTitleProduct.setText("");
-        txtPrice.setText("");
-        txtDescProduct.setText("");
-        jlbThumbProduct.setText("");
+        if(txtDescProduct.getText().length() > 0) {
+            mota = txtDescProduct.getText();
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập mô tả sản phẩm");
+        }
 
-        btnUpdateProduct.setEnabled(false);
-        btnDeleteProduct.setEnabled(false);
-        showProduct();
+        if(txtThumbProduct.getText().length() > 0) {
+            hinhanh = txtThumbProduct.getText();
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập hình ảnh sản phẩm");
+        }
+
+       if(isOK) {
+                Date dateNow = new Date();
+                SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                Product product = new Product(idCat, gia, 0, id_user, id_user, 
+                        tenSP, mota, hinhanh, formatDate.format(dateNow), formatDate.format(dateNow));
+                ProductController.insert(product);
+                JOptionPane.showMessageDialog(rootPane, "Bạn đã thêm thành công!");
+                txtTitleProduct.setText("");
+                txtPrice.setText("");
+                txtDescProduct.setText("");
+                txtThumbProduct.setText("");
+                btnUpdateProduct.setEnabled(false);
+                showProduct();
+            }
     }//GEN-LAST:event_btnInsertProductActionPerformed
 
-    private void btnResetStaffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetStaffActionPerformed
+    private void cbStatusStaffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbStatusStaffActionPerformed
         // TODO add your handling code here:
-        txtFullname.setText("");
-        txtEmail.setText("");
-        txtPhonenumber.setText("");
-        txtAddress.setText("");
-        txtPassword.setText("");
+    }//GEN-LAST:event_cbStatusStaffActionPerformed
 
-        btnUpdateStaff.setEnabled(false);
-        showStaff();
-    }//GEN-LAST:event_btnResetStaffActionPerformed
-
-    private void btnFindStaffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindStaffActionPerformed
+    private void txtPhoneCustomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPhoneCustomActionPerformed
         // TODO add your handling code here:
-        String input = JOptionPane.showInputDialog(this,"Nhap ten nguoi dung can tim kiem!");
-        if(input != null && input.length() > 0 ){
-            staffList = UserController.findByFullnameUser(input);
+    }//GEN-LAST:event_txtPhoneCustomActionPerformed
 
-            tableModelUser.setRowCount(0);
-            staffList.forEach((user) -> {
-                tableModelUser.addRow(new Object[] {tableModelUser.getRowCount() + 1,
-                    user.getFullname(),
-                    user.getEmail(),
-                    user.getPhoneNumber(),
-                    user.getAddress(),
-                    user.getRoleName(),
-                    user.getCreated_at(),
-                    user.getUpdated_at()});
-        });
+    private void jtfDateStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtfDateStartActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jtfDateStartActionPerformed
+
+    private void btnCreateBillExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateBillExportActionPerformed
+        // TODO add your handling code here:
+        String name = null, note = null, dateStartBorrow = null, 
+                dateEndBorrow = null, nameCarrier = null;
+        int idCustom = 0, idCarrier = 0;
+        boolean isOK = true;
+
+        if(txtIDCustom.getText().length() > 0) {
+            idCustom = Integer.valueOf(txtIDCustom.getText());
         } else {
-            showStaff();
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập ID khách hàng");
         }
-    }//GEN-LAST:event_btnFindStaffActionPerformed
-
-    private void btnUpdateStaffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateStaffActionPerformed
-        // TODO add your handling code here:
-
-        String fullname = null, gender = null, email = null, phoneNumber = null,
-                address = null, password = null, roleName = null;
-        int idRole = 0, status = 0;
-        boolean isOK = true;
-        int selectedIndex = tableStaff.getSelectedRow();
-        if(selectedIndex >= 0) {
-            User userFind = staffList.get(selectedIndex);
-
-            if(txtFullname.getText().length() > 0) {
-                fullname = txtFullname.getText();
-            } else {
-                isOK = false;
-                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập tên");
-            }
-
-            gender = boxGender.getSelectedItem().toString();
         
-            if(txtEmail.getText().length() > 0) {
-                email = txtEmail.getText();
-            } else {
-                isOK = false;
-                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập Email!!");
-            }
-
-            if(txtPhonenumber.getText().length() > 0) {
-                phoneNumber = txtPhonenumber.getText();
-            } else {
-                isOK = false;
-                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập so dien thoai");
-            }
-
-            if(txtAddress.getText().length() > 0) {
-                address = txtAddress.getText();
-            } else {
-                isOK = false;
-                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập địa chỉ");
-            }
-            
-            roleName = boxRole.getSelectedItem().toString();
-            for(Role role : roleList) {
-                if(role.getName().equals(roleName)) {
-                    idRole = role.getId();
-                }
-            }
-
-            if(txtPassword.getPassword().length > 0) {
-                password = new String(txtPassword.getPassword());
-            } else {
-                isOK = false;
-                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập mật khẩu");
-            }
-            
-            status = cbStatusStaff.getSelectedIndex();
-            
-            
-
-            if(isOK) {
-                Date dateNow = new Date();
-                SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                User user = new User(userFind.getId(), fullname, email, phoneNumber, address, password, formatDate.format(dateNow), gender, idRole, status);
-
-                UserController.update(user);
-                JOptionPane.showMessageDialog(rootPane, "Bạn đã cập nhật thành công!");
-            }
+        if(txtIDCarrierBillExport.getText().length() > 0) {
+            idCarrier = Integer.valueOf(txtIDCarrierBillExport.getText());
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập ID nhân viên giao hàng");
         }
 
-        txtFullname.setText("");
-        txtEmail.setText("");
-        txtPhonenumber.setText("");
-        txtAddress.setText("");
-        txtPassword.setText("");
-
-        btnUpdateStaff.setEnabled(false);
-        showStaff();
-        showComboBox_Carrier();
-    }//GEN-LAST:event_btnUpdateStaffActionPerformed
-
-    private void btnInsertStaffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInsertStaffActionPerformed
-        // TODO add your handling code here:
-        int idRole = 0;
-        String fullname = null, gender = null, email = null, phoneNumber = null, 
-                address = null, roleName = null, password = null;
-        boolean isOK = true;
-        if(txtFullname.getText().length() > 0) {
-                fullname = txtFullname.getText();
-            } else {
-                isOK = false;
-                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập tên");
-            }
-
-            gender = boxGender.getSelectedItem().toString();
         
-            if(txtEmail.getText().length() > 0) {
-                email = txtEmail.getText();
-            } else {
-                isOK = false;
-                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập Email!!");
-            }
+        note = txtNoteBillExport.getText();
 
-            if(txtPhonenumber.getText().length() > 0) {
-                phoneNumber = txtPhonenumber.getText();
-            } else {
-                isOK = false;
-                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập so dien thoai");
-            }
+        if(jtfDateStart.getText().length() > 0) {
+            dateStartBorrow = jtfDateStart.getText();
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập ngày mượn");
+        }
 
-            if(txtAddress.getText().length() > 0) {
-                address = txtAddress.getText();
-            } else {
-                isOK = false;
-                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập địa chỉ");
-            }
-            
-            roleName = boxRole.getSelectedItem().toString();
-            for(Role role : roleList) {
-                if(role.getName().equals(roleName)) {
-                    idRole = role.getId();
-                }
-            }
-
-            if(txtPassword.getPassword().length > 0) {
-                password = new String(txtPassword.getPassword());
-            } else {
-                isOK = false;
-                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập mật khẩu");
-            }
+        if(jtfDateEnd.getText().length() > 0) {
+            dateEndBorrow = jtfDateEnd.getText();
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập ngày trả");
+        }
         
+
         if(isOK) {
-                Date dateNow = new Date();
-                SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                User user = new User(fullname, email, phoneNumber, address, password, formatDate.format(dateNow), formatDate.format(dateNow), gender, idRole, 0);
+            if(CustomController.findByIDCustom(idCustom)) {
+                if(StaffController.findAllCarrierOnWorkByID(idCarrier)) {
+                    Date dateNow = new Date();
+                    SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
-                UserController.insert(user);
-                JOptionPane.showMessageDialog(rootPane, "Bạn đã cập nhật thành công!");
-                
-                txtFullname.setText("");
-                boxGender.setSelectedIndex(0);
-                txtEmail.setText("");
-                txtPhonenumber.setText("");
-                txtAddress.setText("");
-                boxRole.setSelectedIndex(0);
-                txtPassword.setText("");
+                    BillExport billExport = new BillExport(0, id_user, id_user, idCustom,
+                        idCarrier, formatDate.format(dateNow), formatDate.format(dateNow), note,
+                        dateStartBorrow, dateEndBorrow);
+                    BillExportController.insert(billExport);
 
-                btnUpdateStaff.setEnabled(false);
-                showStaff();
-                showComboBox_Carrier();
-            }
-    }//GEN-LAST:event_btnInsertStaffActionPerformed
+                    JOptionPane.showMessageDialog(rootPane, "Bạn đã thêm hóa đơn xuất thành công!");
 
-    private void boxGenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boxGenderActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_boxGenderActionPerformed
+                    txtIDCustom.setText("");
+                    txtIDCarrierBillExport.setText("");
+                    jtfDateStart.setText("");
+                    jtfDateEnd.setText("");
+                    txtNoteBillExport.setText("");
 
-    private void boxRoleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boxRoleActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_boxRoleActionPerformed
-
-    private void btnDeleteOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteOrderActionPerformed
-        // TODO add your handling code here:
-        int selectedIndex = tableOrder.getSelectedRow();
-        if (selectedIndex >= 0 ){
-            Order order = orderList.get(selectedIndex);
-
-            int option = JOptionPane.showConfirmDialog(this, "Bạn có chắn chắn muốn xóa không?");
-
-            if(option == 0){
-                OrderController.delete(order.getId());
-
-                txtFullnameOrder.setText("");
-                txtEmailOrder.setText("");
-                txtPhoneNumberOrder.setText("");
-                txtAddressOrder.setText("");
-                txtNoteOrder.setText("");
-
-                btnDeleteOrder.setEnabled(false);
-                JOptionPane.showMessageDialog(rootPane, "Bạn đã xóa thành công");
-                showOrder();
+                    showBillExport();
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "ID nhân viên không tồn tại hoặc đã nghỉ việc!");
+                }           
+            } else {
+                JOptionPane.showMessageDialog(rootPane, "ID khách hàng không tồn tại!");
             }
         }
-    }//GEN-LAST:event_btnDeleteOrderActionPerformed
 
-    private void btnShowProductOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowProductOrderActionPerformed
+    }//GEN-LAST:event_btnCreateBillExportActionPerformed
+
+    private void btnResetOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetOrderActionPerformed
         // TODO add your handling code here:
-        int selectedIndex = tableOrder.getSelectedRow();
-        if(selectedIndex >= 0) {
-            Order order = orderList.get(selectedIndex);
-            orderProductFrm = new OrderProductFrm(this, rootPaneCheckingEnabled);
-            orderProductFrm.getUser_id(order);
-            orderProductFrm.setVisible(true);
-            showOrder();
-        }
-    }//GEN-LAST:event_btnShowProductOrderActionPerformed
+        txtIDCustom.setText("");
+        txtIDCarrierBillExport.setText("");
+        jtfDateStart.setText("");
+        jtfDateEnd.setText("");
+        txtNoteBillExport.setText("");
+
+        txtIDCustom.setEditable(true);
+        btnDeleteOrder.setEnabled(false);
+        btnShowProductOrder.setEnabled(false);
+        showBillExport();
+    }//GEN-LAST:event_btnResetOrderActionPerformed
 
     private void btnFindOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindOrderActionPerformed
         // TODO add your handling code here:
         String input = JOptionPane.showInputDialog(this,"Nhập tên khách hàng cần tìm kiếm!");
         if(input != null && input.length() > 0 ){
-            orderList = OrderController.findByFullnameOrder(input);
+            billExportList = BillExportController.findByNameCustom(input);
 
-            tableModelOrder.setRowCount(0);
-            orderList.forEach((order) -> {
-                tableModelOrder.addRow(new Object[] {tableModelOrder.getRowCount() + 1,
-                    order.getFullname(),
-                    order.getEmail(),
-                    order.getPhoneNumber(),
-                    order.getAddress(),
-                    order.getNote(),
-                    order.getTotalMoney(),
-                    order.getCreateTime()});
-        });
+            tableModelBillExport.setRowCount(0);
+
+            billExportList.forEach((billExport) -> {
+                tableModelBillExport.addRow(new Object[] {tableModelBillExport.getRowCount() + 1,
+                    billExport.getNameCustom(),
+                    billExport.getGender(),
+                    billExport.getEmail(),
+                    billExport.getPhoneNumber(),
+                    billExport.getAddress(),
+                    billExport.getNote(),
+                    billExport.getTotal(),
+                    billExport.getNameCarrier(),
+                    billExport.getTimeStartedBorrowed(),
+                    billExport.getTimeEndBorrowed(),
+                    billExport.getCreatedAt(),
+                    billExport.getNameStaffCreated(),
+                    billExport.getUpdatedAt(),
+                    billExport.getNameStaffUpdated()
+                });
+            });
         } else {
-            showOrder();
+            showBillExport();
         }
     }//GEN-LAST:event_btnFindOrderActionPerformed
 
-    private void btnResetOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetOrderActionPerformed
+    private void btnShowProductOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowProductOrderActionPerformed
         // TODO add your handling code here:
-        txtFullnameOrder.setText("");
-        txtEmailOrder.setText("");
-        txtPhoneNumberOrder.setText("");
-        txtAddressOrder.setText("");
-        txtNoteOrder.setText("");
-
-        btnDeleteOrder.setEnabled(false);
-        btnShowProductOrder.setEnabled(false);
-        showOrder();
-    }//GEN-LAST:event_btnResetOrderActionPerformed
-
-    private void txtPhoneNumberOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPhoneNumberOrderActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtPhoneNumberOrderActionPerformed
-
-    private void btnCreateBillExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateBillExportActionPerformed
-        // TODO add your handling code here:
-        int selectedIndex = tableOrder.getSelectedRow();
-        if (selectedIndex >= 0){
-            Order order = orderList.get(selectedIndex);
-            if(order.getStatus() == 1) {
-                JOptionPane.showMessageDialog(rootPane, "Hóa đơn này đã được xuất");
-            }
-            else {
-                billExportFrm = new BillExportFrm(this, rootPaneCheckingEnabled);
-                billExportFrm.showData(order, id_user);
-                billExportFrm.setVisible(true);   
-                txtFullnameOrder.setText("");
-                txtEmailOrder.setText("");
-                txtPhoneNumberOrder.setText("");
-                txtAddressOrder.setText("");
-                txtNoteOrder.setText("");
-
-                btnCreateBillExport.setEnabled(false);
-                btnDeleteOrder.setEnabled(false);
-                showOrder();
-                showBillExport();
-            }
-        }
-    }//GEN-LAST:event_btnCreateBillExportActionPerformed
-
-    private void btnFindCustomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindCustomActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnFindCustomActionPerformed
-
-    private void btnFindResponseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindResponseActionPerformed
-        // TODO add your handling code here:
-        String input = JOptionPane.showInputDialog(this,"Nhập tên khách hàng cần tìm kiếm: ");
-        if(input != null && input.length() > 0 ){
-            feedbackList = FeedBackController.findByFullnameUser(input);
-
-            tableModelFeedback.setRowCount(0);
-            feedbackList.forEach((feedback) -> {
-                tableModelFeedback.addRow(new Object[] {tableModelFeedback.getRowCount() + 1,
-                feedback.getEmail(),
-                feedback.getFullname(),
-                feedback.getPhoneNumber(),
-                feedback.getAddress(),
-                feedback.getNote(),
-                feedback.getPhoneNumber(),
-                feedback.getCreated_at()});
-            });
-        } else {
-            showFeedback();
-        }
-    }//GEN-LAST:event_btnFindResponseActionPerformed
-
-    private void txtSupplierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSupplierActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtSupplierActionPerformed
-
-    private void btnAddSupplierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddSupplierActionPerformed
-        // TODO add your handling code here:
-        String name = null, email = null, phoneNumber = null, 
-                address = null;
-        boolean isOK = true;
-        if(txtSupplier.getText().length() > 0) {
-                name = txtSupplier.getText();
-            } else {
-                isOK = false;
-                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập tên");
-            }
-        
-            if(txtEmailSupplier.getText().length() > 0) {
-                email = txtEmailSupplier.getText();
-            } else {
-                isOK = false;
-                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập Email!!");
-            }
-
-            if(txtPhoneSupplier.getText().length() > 0) {
-                phoneNumber = txtPhoneSupplier.getText();
-            } else {
-                isOK = false;
-                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập so dien thoai");
-            }
-
-            if(txtAddressSupplier.getText().length() > 0) {
-                address = txtAddressSupplier.getText();
-            } else {
-                isOK = false;
-                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập địa chỉ");
-            }
-                
-            
-        if(isOK) {
-                Date dateNow = new Date();
-                SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            
-                Supplier supplier = new Supplier(name, phoneNumber, email, address, formatDate.format(dateNow), formatDate.format(dateNow));
-
-                SupplierController.insert(supplier);
-                JOptionPane.showMessageDialog(rootPane, "Bạn đã cập nhật thành công!");
-                
-                txtSupplier.setText("");
-                txtEmailSupplier.setText("");
-                txtPhoneSupplier.setText("");
-                txtAddressSupplier.setText("");
-
-                showSupplier();
-                showComboBox_Supplier();
-            }
-    }//GEN-LAST:event_btnAddSupplierActionPerformed
-
-    private void btnUpdateSupplierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateSupplierActionPerformed
-        // TODO add your handling code here:
-        String name = null, email = null, phoneNumber = null, 
-                address = null;
-        boolean isOK = true;
-        int selectedIndex = tableSupplier.getSelectedRow();
+        int selectedIndex = tableBillExport.getSelectedRow();
         if(selectedIndex >= 0) {
-            Supplier supplierFind = supplierList.get(selectedIndex);
-
-            if(txtSupplier.getText().length() > 0) {
-                name = txtSupplier.getText();
-            } else {
-                isOK = false;
-                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập tên");
-            }
-        
-            if(txtEmailSupplier.getText().length() > 0) {
-                email = txtEmailSupplier.getText();
-            } else {
-                isOK = false;
-                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập Email!!");
-            }
-
-            if(txtPhoneSupplier.getText().length() > 0) {
-                phoneNumber = txtPhoneSupplier.getText();
-            } else {
-                isOK = false;
-                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập SĐT");
-            }
-
-            if(txtAddressSupplier.getText().length() > 0) {
-                address = txtAddressSupplier.getText();
-            } else {
-                isOK = false;
-                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập địa chỉ");
-            }
-            
-
-            if(isOK) {
-                Date dateNow = new Date();
-                SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                Supplier supplier = new Supplier(supplierFind.getId(), name, phoneNumber, email, address, formatDate.format(dateNow));
-
-                SupplierController.update(supplier);
-                JOptionPane.showMessageDialog(rootPane, "Bạn đã cập nhật thành công!");
-                
-                txtSupplier.setText("");
-                txtEmailSupplier.setText("");
-                txtPhoneSupplier.setText("");
-                txtAddressSupplier.setText("");
-                
-                btnUpdateSupplier.setEnabled(false);
-                showSupplier();
-                showComboBox_Supplier();
-            }
+            int billID = billExportList.get(selectedIndex).getId();
+            billExportDetailFrm = new BillExportDetailFrm(this, rootPaneCheckingEnabled);
+            billExportDetailFrm.getIDBill(billID, id_user);
+            billExportDetailFrm.setVisible(true);
+            showBillExport();
+            showProduct();
+            showStatistical();
         }
-    }//GEN-LAST:event_btnUpdateSupplierActionPerformed
+    }//GEN-LAST:event_btnShowProductOrderActionPerformed
 
-    private void btnResetSupplierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetSupplierActionPerformed
+    private void btnDeleteOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteOrderActionPerformed
         // TODO add your handling code here:
-        txtSupplier.setText("");
-        txtEmailSupplier.setText("");
-        txtPhoneSupplier.setText("");
-        txtAddressSupplier.setText("");
-
-        btnUpdateSupplier.setEnabled(false);
-        showSupplier();
-    }//GEN-LAST:event_btnResetSupplierActionPerformed
-
-    private void btnFindSupplierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindSupplierActionPerformed
-        // TODO add your handling code here:
-        String input = JOptionPane.showInputDialog(this,"Nhap ten nguoi dung can tim kiem!");
-        if(input != null && input.length() > 0 ){
-            supplierList = SupplierController.findByNameSupplier(input);
-
-            tableModelSupplier.setRowCount(0);
-        
-            supplierList.forEach((supplier) -> {
-                tableModelSupplier.addRow(new Object[] {tableModelSupplier.getRowCount() + 1,
-                    supplier.getName(),
-                    supplier.getPhoneNumber(),
-                    supplier.getEmail(),
-                    supplier.getAddress(),
-                    supplier.getCreatedTime(),
-                    supplier.getUpdatedTime()});
-            });
-        } else {
-            showSupplier();
-        }
-    }//GEN-LAST:event_btnFindSupplierActionPerformed
-
-    private void btnAddBillImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddBillImportActionPerformed
-        // TODO add your handling code here:
-        int idSupplier = 0, idProduct = 0, idCarrier = 0, count = 0, price = 0, status = 0;
-        
-        boolean isOK = true;
-        
-        List<Supplier> supplierBill = new ArrayList<>();
-        List<Product> productBill = new ArrayList<>();
-        List<User> CarrierBill = new ArrayList<>();
-        
-        supplierBill = SupplierController.findAll();
-        productBill = ProductController.findAll();
-        CarrierBill = UserController.findAllCarrierOnWork();
-        
-        idSupplier = supplierBill.get(cbSupplier.getSelectedIndex()).getId();
-        idProduct = productBill.get(cbProduct.getSelectedIndex()).getId();
-        idCarrier = CarrierBill.get(cbCarrierBillImport.getSelectedIndex()).getId();
-        if(txtCountProduct.getText().length() > 0) {
-            count = Integer.valueOf(txtCountProduct.getText());
-        }
-        else {
-            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập số lượng");
-            isOK = false;
-        }
-        
-        if(txtPriceProduct.getText().length() > 0) {
-            price = Integer.valueOf(txtPriceProduct.getText());
-        }
-        else {
-            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập giá");
-            isOK = false;
-        }
-        
-        
-        if(isOK) {
-            Date dateNow = new Date();
-            SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            
-            BillImport billImport = new BillImport(idProduct, count, id_user, idCarrier, 
-                    idSupplier, price, status, formatDate.format(dateNow), formatDate.format(dateNow));
-            
-            BillImportController.insert(billImport);
-            JOptionPane.showMessageDialog(rootPane, "Bạn đã thêm hóa đơn thành công");
-            
-            cbSupplier.setSelectedIndex(0);
-            cbProduct.setSelectedIndex(0);
-            txtPriceProduct.setText("");
-            txtCountProduct.setText("");
-            cbCarrierBillImport.setSelectedIndex(0);
-         
-            showBillImport();
-        }
-    }//GEN-LAST:event_btnAddBillImportActionPerformed
-
-    private void btnEditBillImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditBillImportActionPerformed
-        // TODO add your handling code here:
-        int idSupplier = 0, idProduct = 0, idCarrier = 0, count = 0, price = 0;
-        
-        boolean isOK = true;
-        
-        List<Supplier> supplierBill = new ArrayList<>();
-        List<Product> productBill = new ArrayList<>();
-        List<User> CarrierBill = new ArrayList<>();
-        
-        supplierBill = SupplierController.findAll();
-        productBill = ProductController.findAll();
-        CarrierBill = UserController.findAllCarrierOnWork();
-        int selectedIndex = tableBillImport.getSelectedRow();
-        if(selectedIndex >= 0) {
-            BillImport bill = billImportList.get(selectedIndex);
-            
-            idSupplier = supplierBill.get(cbSupplier.getSelectedIndex()).getId();
-            idProduct = productBill.get(cbProduct.getSelectedIndex()).getId();
-            idCarrier = CarrierBill.get(cbCarrierBillImport.getSelectedIndex()).getId();
-            if(txtCountProduct.getText().length() > 0) {
-                count = Integer.valueOf(txtCountProduct.getText());
-            }
-            else {
-                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập số lượng");
-                isOK = false;
-            }
-
-            if(txtPriceProduct.getText().length() > 0) {
-                price = Integer.valueOf(txtPriceProduct.getText());
-            }
-            else {
-                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập giá");
-                isOK = false;
-            }
-
-
-            if(isOK) {
-                Date dateNow = new Date();
-                SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-
-                BillImport billImport = new BillImport(bill.getId(), idProduct, count, idCarrier, 
-                        idSupplier, price, formatDate.format(dateNow));
-
-                BillImportController.update(billImport);
-                JOptionPane.showMessageDialog(rootPane, "Bạn đã sửa hóa đơn thành công");
-                
-                cbSupplier.setSelectedIndex(0);
-                cbProduct.setSelectedIndex(0);
-                txtPriceProduct.setText("");
-                txtCountProduct.setText("");
-                cbCarrierBillImport.setSelectedIndex(0);
-                btnEditBillImport.setEnabled(false);
-                btnDeleteBillImport.setEnabled(false);
-                btnSuccessBillImport.setEnabled(false);
-                
-                
-                showBillImport();
-            }
-        }
-    }//GEN-LAST:event_btnEditBillImportActionPerformed
-
-    private void btnDeleteBillImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteBillImportActionPerformed
-        // TODO add your handling code here:
-        int selectedIndex = tableBillImport.getSelectedRow();
+        int selectedIndex = tableBillExport.getSelectedRow();
         if (selectedIndex >= 0 ){
-            BillImport billImport = billImportList.get(selectedIndex);
+            BillExport billExport = billExportList.get(selectedIndex);
 
             int option = JOptionPane.showConfirmDialog(this, "Bạn có chắn chắn muốn xóa không?");
 
             if(option == 0){
-                BillImportController.delete(billImport.getId());
+                BillExportController.delete(billExport.getId());
 
-                cbSupplier.setSelectedIndex(0);
-                cbProduct.setSelectedIndex(0);
-                txtPriceProduct.setText("");
-                txtCountProduct.setText("");
-                cbCarrierBillImport.setSelectedIndex(0);
+                txtIDCustom.setText("");
+                txtIDCarrierBillExport.setText("");
+                jtfDateStart.setText("");
+                jtfDateEnd.setText("");
+                txtNoteBillExport.setText("");
 
-                btnEditBillImport.setEnabled(false);
-                btnDeleteBillImport.setEnabled(false);
-                btnSuccessBillImport.setEnabled(false);
+                btnDeleteOrder.setEnabled(false);
                 JOptionPane.showMessageDialog(rootPane, "Bạn đã xóa thành công");
-                showBillImport();
+                showBillExport();
             }
         }
-    }//GEN-LAST:event_btnDeleteBillImportActionPerformed
+    }//GEN-LAST:event_btnDeleteOrderActionPerformed
 
-    private void btnFindBillImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindBillImportActionPerformed
+    private void btnAddCustomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCustomActionPerformed
         // TODO add your handling code here:
-        String input = JOptionPane.showInputDialog(this,"Nhập tên nhà cung cấp cần tìm kiếm!");
-        if(input != null && input.length() > 0 ){
-            billImportList = BillImportController.findByNameSupplier(input);
-
-            tableModelBillImport.setRowCount(0);
-        
-            billImportList.forEach((billImport) -> {
-                tableModelBillImport.addRow(new Object[] {tableModelBillImport.getRowCount() + 1,
-                    billImport.getNameSupplier(),
-                    billImport.getNameProduct(),
-                    billImport.getCount(),
-                    billImport.getPrice(),
-                    billImport.getNameCarrier(),
-                    billImport.getCreateTime(),
-                    billImport.getNameCreateStaff(),
-                    billImport.getStatus()
-                });
-            });
-        } else {
-            showBillImport();
-        }
-    }//GEN-LAST:event_btnFindBillImportActionPerformed
-
-    private void btnResetBillImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetBillImportActionPerformed
-        // TODO add your handling code here:
-        cbSupplier.setSelectedIndex(0);
-        cbProduct.setSelectedIndex(0);
-        txtPriceProduct.setText("");
-        txtCountProduct.setText("");
-        cbCarrierBillImport.setSelectedIndex(0);
-        btnEditBillImport.setEnabled(false);
-        btnDeleteBillImport.setEnabled(false);
-
-
-        showBillImport();
-    }//GEN-LAST:event_btnResetBillImportActionPerformed
-
-    private void btnSuccessBillImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuccessBillImportActionPerformed
-        // TODO add your handling code here:
-        int idSupplier = 0, idProduct = 0, idCarrier = 0, count = 0, price = 0, status = 0;
-        
+        String name = null, gender = null, email = null, phoneNumber = null,
+        address = null;
         boolean isOK = true;
-        
-        List<Supplier> supplierBill = new ArrayList<>();
-        List<Product> productBill = new ArrayList<>();
-        List<User> CarrierBill = new ArrayList<>();
-        
-        supplierBill = SupplierController.findAll();
-        productBill = ProductController.findAll();
-        CarrierBill = UserController.findAllCarrierOnWork();
-        int selectedIndex = tableBillImport.getSelectedRow();
+
+        if(txtNameCustom.getText().length() > 0) {
+            name = txtNameCustom.getText();
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập tên khách hàng");
+        }
+
+        gender = cbGenderCustom.getSelectedItem().toString();
+
+        if(txtEmailCustom.getText().length() > 0) {
+            email = txtEmailCustom.getText();
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập Email khách hàng!!");
+        }
+
+        if(txtPhoneCustom.getText().length() > 0) {
+            phoneNumber = txtPhoneCustom.getText();
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập số điện thoại khách hàng");
+        }
+
+        if(txtAddressCustom.getText().length() > 0) {
+            address = txtAddressCustom.getText();
+        } else {
+            isOK = false;
+            JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập địa chỉ khách hàng");
+        }
+
+        if(isOK) {
+            Date dateNow = new Date();
+            SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+            Custom custom = new Custom(id_user, id_user, name, gender, email, phoneNumber,
+                address, formatDate.format(dateNow), formatDate.format(dateNow));
+            CustomController.insert(custom);
+
+            JOptionPane.showMessageDialog(rootPane, "Bạn đã thêm khách hàng thành công!");
+
+            txtNameCustom.setText("");
+            cbGenderCustom.setSelectedIndex(0);
+            txtEmailCustom.setText("");
+            txtPhoneCustom.setText("");
+            txtAddressCustom.setText("");
+
+            showCustom();
+        }
+    }//GEN-LAST:event_btnAddCustomActionPerformed
+
+    private void btnEditCustomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditCustomActionPerformed
+        // TODO add your handling code here:
+        String name = null, gender = null, email = null, phoneNumber = null,
+        address = null;
+        int idCustom = 0;
+        boolean isOK = true;
+        int selectedIndex = tableCustom.getSelectedRow();
         if(selectedIndex >= 0) {
-            BillImport bill = billImportList.get(selectedIndex);
-            if(bill.getStatus() == 1) {
-                JOptionPane.showMessageDialog(rootPane, "Đơn hàng đã được xuất");
+            idCustom = customList.get(selectedIndex).getId();
+            
+            if(txtNameCustom.getText().length() > 0) {
+                name = txtNameCustom.getText();
             } else {
-                idSupplier = supplierBill.get(cbSupplier.getSelectedIndex()).getId();
-                idProduct = productBill.get(cbProduct.getSelectedIndex()).getId();
-                idCarrier = CarrierBill.get(cbCarrierBillImport.getSelectedIndex()).getId();
-                if(txtCountProduct.getText().length() > 0) {
-                    count = Integer.valueOf(txtCountProduct.getText());
-                }
-                else {
-                    JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập số lượng");
-                    isOK = false;
-                }
+                isOK = false;
+                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập tên khách hàng");
+            }
 
-                if(txtPriceProduct.getText().length() > 0) {
-                    price = Integer.valueOf(txtPriceProduct.getText());
-                }
-                else {
-                    JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập giá");
-                    isOK = false;
-                }
+            gender = cbGenderCustom.getSelectedItem().toString();
 
-                status = 1;
+            if(txtEmailCustom.getText().length() > 0) {
+                email = txtEmailCustom.getText();
+            } else {
+                isOK = false;
+                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập Email khách hàng!!");
+            }
 
+            if(txtPhoneCustom.getText().length() > 0) {
+                phoneNumber = txtPhoneCustom.getText();
+            } else {
+                isOK = false;
+                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập số điện thoại khách hàng");
+            }
 
-                if(isOK) {
+            if(txtAddressCustom.getText().length() > 0) {
+                address = txtAddressCustom.getText();
+            } else {
+                isOK = false;
+                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập địa chỉ khách hàng");
+            }
+
+            if(isOK) {
+                Date dateNow = new Date();
+                SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+                Custom custom = new Custom(idCustom, id_user, name, gender, email, phoneNumber,
+                    address, formatDate.format(dateNow));
+                CustomController.update(custom);
+
+                JOptionPane.showMessageDialog(rootPane, "Bạn đã cập nhật thông tin khách hàng thành công!");
+
+                txtNameCustom.setText("");
+                cbGenderCustom.setSelectedIndex(0);
+                txtEmailCustom.setText("");
+                txtPhoneCustom.setText("");
+                txtAddressCustom.setText("");
+
+                showCustom();
+            }
+        }
+        
+    }//GEN-LAST:event_btnEditCustomActionPerformed
+
+    private void btnResetCustomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetCustomActionPerformed
+        // TODO add your handling code here:
+        txtNameCustom.setText("");
+        cbGenderCustom.setSelectedIndex(0);
+        txtEmailCustom.setText("");
+        txtPhoneCustom.setText("");
+        txtAddressCustom.setText("");
+        
+        showCustom();
+    }//GEN-LAST:event_btnResetCustomActionPerformed
+
+    private void btnUpdateBillExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateBillExportActionPerformed
+        // TODO add your handling code here:
+        String name = null, note = null, dateStartBorrow = null, 
+                dateEndBorrow = null, nameCarrier = null;
+        int idCustom = 0, idCarrier = 0, id = 0;
+        boolean isOK = true;
+        int selectedIndex = tableBillExport.getSelectedRow();
+        if(selectedIndex >= 0) {
+            id = billExportList.get(selectedIndex).getId();
+            idCustom = Integer.valueOf(txtIDCustom.getText());
+            idCarrier = Integer.valueOf(txtIDCarrierBillExport.getText());
+            note = txtNoteBillExport.getText();
+
+            if(jtfDateStart.getText().length() > 0) {
+                dateStartBorrow = jtfDateStart.getText();
+            } else {
+                isOK = false;
+                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập ngày mượn");
+            }
+
+            if(jtfDateEnd.getText().length() > 0) {
+                dateEndBorrow = jtfDateEnd.getText();
+            } else {
+                isOK = false;
+                JOptionPane.showMessageDialog(rootPane, "Bạn chưa nhập ngày trả");
+            }
+            
+            if(isOK) {
+                if(StaffController.findAllCarrierOnWorkByID(idCarrier)) {
                     Date dateNow = new Date();
                     SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
-                    BillImport billImport = new BillImport(bill.getId(), idProduct, count, idCarrier, 
-                            idSupplier, price, status, formatDate.format(dateNow));
+                    BillExport billExport = new BillExport(id, id_user, idCustom,
+                        idCarrier, formatDate.format(dateNow), note, dateStartBorrow, dateEndBorrow);
+                    BillExportController.update(billExport);
 
-                    BillImportController.updateStatus(billImport);
-                    JOptionPane.showMessageDialog(rootPane, "Bạn đã xuất hóa đơn thành công");
+                    JOptionPane.showMessageDialog(rootPane, "Bạn đã cập nhật hóa đơn xuất thành công!");
 
-                    cbSupplier.setSelectedIndex(0);
-                    cbProduct.setSelectedIndex(0);
-                    txtPriceProduct.setText("");
-                    txtCountProduct.setText("");
-                    cbCarrierBillImport.setSelectedIndex(0);
-                    btnEditBillImport.setEnabled(false);
-                    btnDeleteBillImport.setEnabled(false);
-                    btnSuccessBillImport.setEnabled(false);
+                    txtIDCustom.setText("");
+                    txtIDCarrierBillExport.setText("");
+                    jtfDateStart.setText("");
+                    jtfDateEnd.setText("");
+                    txtNoteBillExport.setText("");
 
-                    showBillImport();
-                    showProduct();
+                    showBillExport();
+                } else {
+                    JOptionPane.showMessageDialog(rootPane, "ID nhân viên không tồn tại hoặc đã nghỉ việc!");
                 }
             }
         }
-        
-    }//GEN-LAST:event_btnSuccessBillImportActionPerformed
+    }//GEN-LAST:event_btnUpdateBillExportActionPerformed
+
+    private void txtIDSupplierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIDSupplierActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtIDSupplierActionPerformed
+
+    private void btnCarrierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCarrierActionPerformed
+        // TODO add your handling code here:
+        listCarrierFrm = new ListCarrierFrm(this, rootPaneCheckingEnabled);
+        listCarrierFrm.showAll();
+        listCarrierFrm.setVisible(true);
+    }//GEN-LAST:event_btnCarrierActionPerformed
+
+    private void btnWarhouseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnWarhouseActionPerformed
+        // TODO add your handling code here:
+        listWareHouseFrm = new ListWareHouseFrm(this, rootPaneCheckingEnabled);
+        listWareHouseFrm.showAll();
+        listWareHouseFrm.setVisible(true);
+    }//GEN-LAST:event_btnWarhouseActionPerformed
+
+    private void btnConsultingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConsultingActionPerformed
+        // TODO add your handling code here:
+        listConsultingFrm = new ListConsultingFrm(this, rootPaneCheckingEnabled);
+        listConsultingFrm.showAll();
+        listConsultingFrm.setVisible(true);
+    }//GEN-LAST:event_btnConsultingActionPerformed
     
     
     /**
@@ -2620,48 +2912,56 @@ public class AppManager extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> boxGender;
     private javax.swing.JComboBox<String> boxRole;
     private javax.swing.JButton btnAddBillImport;
+    private javax.swing.JButton btnAddCustom;
     private javax.swing.JButton btnAddSupplier;
+    private javax.swing.JButton btnCarrier;
+    private javax.swing.JButton btnConsulting;
     private javax.swing.JButton btnCreateBillExport;
     private javax.swing.JButton btnDeleteBillImport;
     private javax.swing.JButton btnDeleteOrder;
-    private javax.swing.JButton btnDeleteProduct;
     private javax.swing.JButton btnEditBillImport;
+    private javax.swing.JButton btnEditCustom;
     private javax.swing.JButton btnFindBillImport;
     private javax.swing.JButton btnFindCustom;
     private javax.swing.JButton btnFindOrder;
     private javax.swing.JButton btnFindProduct;
-    private javax.swing.JButton btnFindResponse;
     private javax.swing.JButton btnFindStaff;
     private javax.swing.JButton btnFindSupplier;
     private javax.swing.JButton btnInsertProduct;
     private javax.swing.JButton btnInsertStaff;
     private javax.swing.JButton btnResetBillImport;
+    private javax.swing.JButton btnResetCustom;
     private javax.swing.JButton btnResetOrder;
     private javax.swing.JButton btnResetProduct;
     private javax.swing.JButton btnResetStaff;
     private javax.swing.JButton btnResetSupplier;
     private javax.swing.JButton btnSelectImg;
+    private javax.swing.JButton btnShowListBillImport;
     private javax.swing.JButton btnShowProductOrder;
-    private javax.swing.JButton btnSuccessBillImport;
+    private javax.swing.JButton btnUpdateBillExport;
     private javax.swing.JButton btnUpdateProduct;
     private javax.swing.JButton btnUpdateStaff;
     private javax.swing.JButton btnUpdateSupplier;
-    private javax.swing.JComboBox<String> cbCarrierBillImport;
-    private javax.swing.JComboBox<String> cbProduct;
+    private javax.swing.JButton btnWarhouse;
+    private javax.swing.JComboBox<String> cbGenderCustom;
     private javax.swing.JComboBox<String> cbStatusStaff;
-    private javax.swing.JComboBox<String> cbSupplier;
     private javax.swing.JPanel infoProduct;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
-    private javax.swing.JLabel jLabel17;
-    private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -2670,9 +2970,9 @@ public class AppManager extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel12;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane10;
-    private javax.swing.JScrollPane jScrollPane11;
     private javax.swing.JScrollPane jScrollPane12;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -2684,48 +2984,49 @@ public class AppManager extends javax.swing.JFrame {
     private javax.swing.JTable jTable1;
     private javax.swing.JLabel jlbEmail;
     private javax.swing.JLabel jlbGender;
+    private javax.swing.JLabel jlbInterest;
     private javax.swing.JLabel jlbName;
     private javax.swing.JLabel jlbPhoneNumber;
     private javax.swing.JLabel jlbThumbProduct;
-    private javax.swing.JPanel jplBill;
+    private javax.swing.JLabel jlbToTalEntered;
+    private javax.swing.JLabel jlbTotalRevenue;
     private javax.swing.JPanel jplBillExport;
     private javax.swing.JPanel jplBillImport;
     private javax.swing.JTabbedPane jplBillManage;
     private javax.swing.JPanel jplGuest;
     private javax.swing.JPanel jplProduct;
-    private javax.swing.JPanel jplResponse;
     private javax.swing.JPanel jplStaff;
     private javax.swing.JPanel jplStatistic;
     private javax.swing.JPanel jplSupplier;
+    private javax.swing.JTextField jtfDateEnd;
+    private javax.swing.JTextField jtfDateStart;
     private javax.swing.JTable tableBillExport;
     private javax.swing.JTable tableBillImport;
     private javax.swing.JTable tableCustom;
-    private javax.swing.JTable tableFeedback;
-    private javax.swing.JTable tableOrder;
     private javax.swing.JTable tableProduct;
     private javax.swing.JTable tableStaff;
     private javax.swing.JTable tableSupplier;
     private javax.swing.JTextField txtAddress;
-    private javax.swing.JTextField txtAddressOrder;
+    private javax.swing.JTextField txtAddressCustom;
     private javax.swing.JTextField txtAddressSupplier;
-    private javax.swing.JTextField txtCountProduct;
     private javax.swing.JTextArea txtDescProduct;
     private javax.swing.JTextField txtEmail;
-    private javax.swing.JTextField txtEmailOrder;
+    private javax.swing.JTextField txtEmailCustom;
     private javax.swing.JTextField txtEmailSupplier;
     private javax.swing.JTextField txtFullname;
-    private javax.swing.JTextField txtFullnameOrder;
-    private javax.swing.JTextArea txtNoteOrder;
-    private javax.swing.JScrollPane txtNoteOrder2;
+    private javax.swing.JTextField txtIDCarrierBillExport;
+    private javax.swing.JTextField txtIDCarrierBillImport;
+    private javax.swing.JTextField txtIDCustom;
+    private javax.swing.JTextField txtIDSupplier;
+    private javax.swing.JTextField txtNameCustom;
+    private javax.swing.JTextArea txtNoteBillExport;
     private javax.swing.JPasswordField txtPassword;
-    private javax.swing.JTextField txtPhoneNumberOrder;
+    private javax.swing.JTextField txtPhoneCustom;
     private javax.swing.JTextField txtPhoneSupplier;
     private javax.swing.JTextField txtPhonenumber;
     private javax.swing.JTextField txtPrice;
-    private javax.swing.JTextField txtPriceProduct;
     private javax.swing.JTextField txtSupplier;
     private javax.swing.JTextField txtThumbProduct;
     private javax.swing.JTextField txtTitleProduct;
     // End of variables declaration//GEN-END:variables
-
 }

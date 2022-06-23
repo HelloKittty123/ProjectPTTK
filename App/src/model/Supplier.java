@@ -5,46 +5,53 @@
  */
 package model;
 
-import java.text.SimpleDateFormat;
-
 /**
  *
  * @author Dell
  */
 public class Supplier {
-    int id;
-    String name, phoneNumber, email, address, createdTime, updatedTime;
+    int id, idStaffCreated, idStaffUpdated;
+    String name, phoneNumber, email, address, createdAt, nameStaffCreated, updatedAt, nameStaffUpdated;
 
     public Supplier() {
     }
 
-    public Supplier(int id, String name, String phoneNumber, String email, String address, String createdTime, String updatedTime) {
+    public Supplier(int id, int idStaffCreated, int idStaffUpdated, String name, String phoneNumber, String email, String address, String createdAt, String nameStaffCreated, String updatedAt, String nameStaffUpdated) {
         this.id = id;
+        this.idStaffCreated = idStaffCreated;
+        this.idStaffUpdated = idStaffUpdated;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.address = address;
-        this.createdTime = createdTime;
-        this.updatedTime = updatedTime;
+        this.createdAt = createdAt;
+        this.nameStaffCreated = nameStaffCreated;
+        this.updatedAt = updatedAt;
+        this.nameStaffUpdated = nameStaffUpdated;
     }
 
-    public Supplier(String name, String phoneNumber, String email, String address, String createdTime, String updatedTime) {
+    public Supplier(int idStaffCreated, int idStaffUpdated, String name, String phoneNumber, String email, String address, String createdAt, String updatedAt) {
+        this.idStaffCreated = idStaffCreated;
+        this.idStaffUpdated = idStaffUpdated;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.address = address;
-        this.createdTime = createdTime;
-        this.updatedTime = updatedTime;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
-    public Supplier(int id, String name, String phoneNumber, String email, String address, String updatedTime) {
+    public Supplier(int id, int idStaffUpdated, String name, String phoneNumber, String email, String address, String updatedAt) {
         this.id = id;
+        this.idStaffUpdated = idStaffUpdated;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.address = address;
-        this.updatedTime = updatedTime;
+        this.updatedAt = updatedAt;
     }
+    
+    
     
     public int getId() {
         return id;
@@ -52,6 +59,22 @@ public class Supplier {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getIdStaffCreated() {
+        return idStaffCreated;
+    }
+
+    public void setIdStaffCreated(int idStaffCreated) {
+        this.idStaffCreated = idStaffCreated;
+    }
+
+    public int getIdStaffUpdated() {
+        return idStaffUpdated;
+    }
+
+    public void setIdStaffUpdated(int idStaffUpdated) {
+        this.idStaffUpdated = idStaffUpdated;
     }
 
     public String getName() {
@@ -86,22 +109,41 @@ public class Supplier {
         this.address = address;
     }
 
-    public String getCreatedTime() {
-        return createdTime;
+    public String getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreatedTime(String createdTime) {
-        this.createdTime = createdTime;
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public String getUpdatedTime() {
-        return updatedTime;
+    public String getNameStaffCreated() {
+        return nameStaffCreated;
     }
 
-    public void setUpdatedTime(String updatedTime) {
-        this.updatedTime = updatedTime;
+    public void setNameStaffCreated(String nameStaffCreated) {
+        this.nameStaffCreated = nameStaffCreated;
     }
 
-    
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getNameStaffUpdated() {
+        return nameStaffUpdated;
+    }
+
+    public void setNameStaffUpdated(String nameStaffUpdated) {
+        this.nameStaffUpdated = nameStaffUpdated;
+    }
+
+    @Override
+    public String toString() {
+        return "Supplier{" + "id=" + id + ", idStaffCreated=" + idStaffCreated + ", idStaffUpdated=" + idStaffUpdated + ", name=" + name + ", phoneNumber=" + phoneNumber + ", email=" + email + ", address=" + address + ", createdAt=" + createdAt + ", nameStaffCreated=" + nameStaffCreated + ", updatedAt=" + updatedAt + ", nameStaffUpdated=" + nameStaffUpdated + '}';
+    }
     
 }

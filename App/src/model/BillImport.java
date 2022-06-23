@@ -10,64 +10,45 @@ package model;
  * @author Dell
  */
 public class BillImport {
-    int id, idProduct, count, idCreateStaff, idCarrier, idSupplier, price, status;
-    String nameProduct, nameCreateStaff, nameCarrier, nameSupplier, createTime, updateTime;
+    int id, total, idStaffCreated, idStaffUpdated, idSupplier, idCarrier;
+    String createdAt, updatedAt, nameStaffCreated, nameStaffUpdated, nameSupplier, nameCarrier;
 
     public BillImport() {
     }
 
-    public BillImport(int id, int idProduct, int count, int idCreateStaff, int idCarrier, int idSupplier, int price, int status, String nameProduct, String nameCreateStaff, String nameCarrier, String nameSupplier, String createTime, String updateTime) {
+    public BillImport(int id, int total, int idStaffCreated, int idStaffUpdated, int idSupplier, int idCarrier, String createdAt, String updatedAt, String nameStaffCreated, String nameStaffUpdated, String nameSupplier, String nameCarrier) {
         this.id = id;
-        this.idProduct = idProduct;
-        this.count = count;
-        this.idCreateStaff = idCreateStaff;
-        this.idCarrier = idCarrier;
+        this.total = total;
+        this.idStaffCreated = idStaffCreated;
+        this.idStaffUpdated = idStaffUpdated;
         this.idSupplier = idSupplier;
-        this.price = price;
-        this.status = status;
-        this.nameProduct = nameProduct;
-        this.nameCreateStaff = nameCreateStaff;
-        this.nameCarrier = nameCarrier;
+        this.idCarrier = idCarrier;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.nameStaffCreated = nameStaffCreated;
+        this.nameStaffUpdated = nameStaffUpdated;
         this.nameSupplier = nameSupplier;
-        this.createTime = createTime;
-        this.updateTime = updateTime;
+        this.nameCarrier = nameCarrier;
     }
 
-    public BillImport(int idProduct, int count, int idCreateStaff, int idCarrier, int idSupplier, int price, int status, String createTime, String updateTime) {
-        this.idProduct = idProduct;
-        this.count = count;
-        this.idCreateStaff = idCreateStaff;
-        this.idCarrier = idCarrier;
+    public BillImport(int total, int idStaffCreated, int idStaffUpdated, int idSupplier, int idCarrier, String createdAt, String updatedAt) {
+        this.total = total;
+        this.idStaffCreated = idStaffCreated;
+        this.idStaffUpdated = idStaffUpdated;
         this.idSupplier = idSupplier;
-        this.price = price;
-        this.status = status;
-        this.createTime = createTime;
-        this.updateTime = updateTime;
+        this.idCarrier = idCarrier;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
-    public BillImport(int id, int idProduct, int count, int idCarrier, int idSupplier, int price, int status, String updateTime) {
+    public BillImport(int id, int idStaffUpdated, int idSupplier, int idCarrier, String updatedAt) {
         this.id = id;
-        this.idProduct = idProduct;
-        this.count = count;
-        this.idCarrier = idCarrier;
+        this.idStaffUpdated = idStaffUpdated;
         this.idSupplier = idSupplier;
-        this.price = price;
-        this.status = status;
-        this.updateTime = updateTime;
-    }
-    
-    public BillImport(int id, int idProduct, int count, int idCarrier, int idSupplier, int price, String updateTime) {
-        this.id = id;
-        this.idProduct = idProduct;
-        this.count = count;
         this.idCarrier = idCarrier;
-        this.idSupplier = idSupplier;
-        this.price = price;
-        this.updateTime = updateTime;
+        this.updatedAt = updatedAt;
     }
-    
-    
-
+   
     public int getId() {
         return id;
     }
@@ -76,36 +57,28 @@ public class BillImport {
         this.id = id;
     }
 
-    public int getIdProduct() {
-        return idProduct;
+    public int getTotal() {
+        return total;
     }
 
-    public void setIdProduct(int idProduct) {
-        this.idProduct = idProduct;
+    public void setTotal(int total) {
+        this.total = total;
     }
 
-    public int getCount() {
-        return count;
+    public int getIdStaffCreated() {
+        return idStaffCreated;
     }
 
-    public void setCount(int count) {
-        this.count = count;
+    public void setIdStaffCreated(int idStaffCreated) {
+        this.idStaffCreated = idStaffCreated;
     }
 
-    public int getIdCreateStaff() {
-        return idCreateStaff;
+    public int getIdStaffUpdated() {
+        return idStaffUpdated;
     }
 
-    public void setIdCreateStaff(int idCreateStaff) {
-        this.idCreateStaff = idCreateStaff;
-    }
-
-    public int getIdCarrier() {
-        return idCarrier;
-    }
-
-    public void setIdCarrier(int idCarrier) {
-        this.idCarrier = idCarrier;
+    public void setIdStaffUpdated(int idStaffUpdated) {
+        this.idStaffUpdated = idStaffUpdated;
     }
 
     public int getIdSupplier() {
@@ -116,44 +89,44 @@ public class BillImport {
         this.idSupplier = idSupplier;
     }
 
-    public int getPrice() {
-        return price;
+    public int getIdCarrier() {
+        return idCarrier;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
+    public void setIdCarrier(int idCarrier) {
+        this.idCarrier = idCarrier;
     }
 
-    public int getStatus() {
-        return status;
+    public String getCreatedAt() {
+        return createdAt;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public String getNameProduct() {
-        return nameProduct;
+    public String getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setNameProduct(String nameProduct) {
-        this.nameProduct = nameProduct;
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
-    public String getNameCreateStaff() {
-        return nameCreateStaff;
+    public String getNameStaffCreated() {
+        return nameStaffCreated;
     }
 
-    public void setNameCreateStaff(String nameCreateStaff) {
-        this.nameCreateStaff = nameCreateStaff;
+    public void setNameStaffCreated(String nameStaffCreated) {
+        this.nameStaffCreated = nameStaffCreated;
     }
 
-    public String getNameCarrier() {
-        return nameCarrier;
+    public String getNameStaffUpdated() {
+        return nameStaffUpdated;
     }
 
-    public void setNameCarrier(String nameCarrier) {
-        this.nameCarrier = nameCarrier;
+    public void setNameStaffUpdated(String nameStaffUpdated) {
+        this.nameStaffUpdated = nameStaffUpdated;
     }
 
     public String getNameSupplier() {
@@ -164,20 +137,17 @@ public class BillImport {
         this.nameSupplier = nameSupplier;
     }
 
-    public String getCreateTime() {
-        return createTime;
+    public String getNameCarrier() {
+        return nameCarrier;
     }
 
-    public void setCreateTime(String createTime) {
-        this.createTime = createTime;
+    public void setNameCarrier(String nameCarrier) {
+        this.nameCarrier = nameCarrier;
     }
 
-    public String getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(String updateTime) {
-        this.updateTime = updateTime;
+    @Override
+    public String toString() {
+        return "BillImport{" + "id=" + id + ", total=" + total + ", idStaffCreated=" + idStaffCreated + ", idStaffUpdated=" + idStaffUpdated + ", idSupplier=" + idSupplier + ", idCarrier=" + idCarrier + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", nameStaffCreated=" + nameStaffCreated + ", nameStaffUpdated=" + nameStaffUpdated + ", nameSupplier=" + nameSupplier + ", nameCarrier=" + nameCarrier + '}';
     }
 
     

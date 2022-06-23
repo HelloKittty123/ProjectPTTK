@@ -10,24 +10,16 @@ package model;
  */
 public class Category {
     int id;
-    String name,h4content,h5content;
+    String name;
 
     public Category() {
     }
 
-    public Category(int id,String name, String h4content, String h5content) {
+    public Category(int id, String name) {
         this.id = id;
         this.name = name;
-        this.h4content = h4content;
-        this.h5content = h5content;
     }
 
-    public Category(String name, String h4content, String h5content) {
-        this.name = name;
-        this.h4content = h4content;
-        this.h5content = h5content;
-    }
-    
     public int getId() {
         return id;
     }
@@ -35,7 +27,7 @@ public class Category {
     public void setId(int id) {
         this.id = id;
     }
-    
+
     public String getName() {
         return name;
     }
@@ -44,20 +36,14 @@ public class Category {
         this.name = name;
     }
 
-    public String getH4content() {
-        return h4content;
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Category{id=").append(id);
+        sb.append(", name=").append(name);
+        sb.append('}');
+        return sb.toString();
     }
-
-    public void setH4content(String h4content) {
-        this.h4content = h4content;
-    }
-
-    public String getH5content() {
-        return h5content;
-    }
-
-    public void setH5content(String h5content) {
-        this.h5content = h5content;
-    }
-
+    
+    
 }

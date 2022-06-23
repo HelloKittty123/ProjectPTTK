@@ -30,22 +30,31 @@ public class SupplierController {
         
         try {
             //lay tat ca danh sach sinh vien
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_cuoi", "root", "trung123Aa");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_hoi", "root", "trung123Aa");
             
             //query
-            String sql = "select * from supplier";
+            String sql = "select supplier.*, staffCreate.fullname staffCreateName, "
+                    + "staffUpdate.fullname staffUpdateName "
+                    + "from supplier join staff staffCreate "
+                    + "on supplier.id_staff_created = staffCreate.id "
+                    + "join staff staffUpdate "
+                    + "on supplier.id_staff_updated = staffUpdate.id";
             statement = (Statement) conn.createStatement();
             
             ResultSet resultSet = statement.executeQuery(sql);
             
             while (resultSet.next()) {
                 Supplier supplier = new Supplier(resultSet.getInt("id"), 
+                        resultSet.getInt("id_staff_created"),
+                        resultSet.getInt("id_staff_updated"),
                         resultSet.getString("name"), 
-                        resultSet.getString("phone_number"), 
+                        resultSet.getString("phoneNumber"), 
                         resultSet.getString("email"), 
                         resultSet.getString("address"),
-                        resultSet.getString("created_time"),
-                        resultSet.getString("updated_time"));
+                        resultSet.getString("created_at"),
+                        resultSet.getString("staffCreateName"),
+                        resultSet.getString("updated_at"),
+                        resultSet.getString("staffUpdateName"));
                 supplierList.add(supplier);
             }
         } catch (SQLException ex) {
@@ -77,19 +86,22 @@ public class SupplierController {
         java.sql.PreparedStatement statement = null;
         try {
             //lay tat ca danh mục
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_cuoi", "root", "trung123Aa");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_hoi", "root", "trung123Aa");
             
             //query
-            String sql = "insert into supplier(name, phone_number, email, address, "
-                    + "created_time, updated_time) values(?, ?, ?, ?, ?, ?)";
+            String sql = "insert into supplier(name, phoneNumber, email, address, "
+                    + "created_at, id_staff_created, updated_at, id_staff_updated) "
+                    + "values(?, ?, ?, ?, ?, ?, ?, ?)";
             statement = conn.prepareCall(sql);
             
             statement.setString(1, supplier.getName());
             statement.setString(2, supplier.getPhoneNumber());
             statement.setString(3, supplier.getEmail());
             statement.setString(4, supplier.getAddress());
-            statement.setString(5, supplier.getCreatedTime());
-            statement.setString(6, supplier.getUpdatedTime());
+            statement.setString(5, supplier.getCreatedAt());
+            statement.setInt(6, supplier.getIdStaffCreated());
+            statement.setString(7, supplier.getUpdatedAt());
+            statement.setInt(8, supplier.getIdStaffUpdated());
             
             statement.execute();
         } catch (SQLException ex) {
@@ -120,18 +132,20 @@ public class SupplierController {
         
         try {
             //lay tat ca danh sach sinh vien
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_cuoi", "root", "trung123Aa");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_hoi", "root", "trung123Aa");
             
             //query
-            String sql = "update supplier set name = ?, phone_number = ?, email = ?, address = ?, updated_time = ? where id = ?";
+            String sql = "update supplier set name = ?, phoneNumber = ?, email = ?, "
+                    + "address = ?, updated_at = ?, id_staff_updated = ? where id = ?";
             statement = conn.prepareCall(sql);
             
             statement.setString(1, supplier.getName());
             statement.setString(2, supplier.getPhoneNumber());
             statement.setString(3, supplier.getEmail());
             statement.setString(4, supplier.getAddress());
-            statement.setString(5, supplier.getUpdatedTime());
-            statement.setInt(6, supplier.getId());
+            statement.setString(5, supplier.getUpdatedAt());
+            statement.setInt(6, supplier.getIdStaffUpdated());
+            statement.setInt(7, supplier.getId());
             
             statement.execute();
         } catch (SQLException ex) {
@@ -163,24 +177,32 @@ public class SupplierController {
         java.sql.PreparedStatement statement = null;
         
         try {
-            //lay tat ca danh sach sinh vien
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_cuoi", "root", "trung123Aa");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_hoi", "root", "trung123Aa");
             
             //query
-            String sql = "select * from supplier where name like ?";
+            String sql = "select supplier.*, staffCreate.fullname staffCreateName, "
+                    + "staffUpdate.fullname staffUpdateName from supplier join staff staffCreate "
+                    + "on supplier.id_staff_created = staffCreate.id "
+                    + "join staff staffUpdate "
+                    + "on supplier.id_staff_updated = staffUpdate.id"
+                    + "where supplier.name like ?";
             statement = conn.prepareStatement(sql);
-            statement.setString(1, name + "%");
+            statement.setString(1, "%" + name + "%");
             
             ResultSet resultSet = statement.executeQuery();
             
             while (resultSet.next()) {
                 Supplier supplier = new Supplier(resultSet.getInt("id"), 
+                        resultSet.getInt("id_staff_created"),
+                        resultSet.getInt("id_staff_updated"),
                         resultSet.getString("name"), 
-                        resultSet.getString("phone_number"), 
+                        resultSet.getString("phoneNumber"), 
                         resultSet.getString("email"), 
                         resultSet.getString("address"),
-                        resultSet.getString("created_time"),
-                        resultSet.getString("updated_time"));
+                        resultSet.getString("created_at"),
+                        resultSet.getString("staffCreateName"),
+                        resultSet.getString("updated_at"),
+                        resultSet.getString("staffUpdateName"));
                 supplierList.add(supplier);
             }
         } catch (SQLException ex) {
@@ -205,5 +227,69 @@ public class SupplierController {
         //ket thuc.
         
         return supplierList;
+    }
+    
+    
+    public static boolean findByIDSupplier(int id) {
+        List<Supplier> supplierList = new ArrayList<>();
+        boolean check = true;
+        Connection conn = null;
+        PreparedStatement statement = null;
+        
+        try {
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/web_dam_hoi", "root", "trung123Aa");
+            
+            //query
+            String sql = "select supplier.*, staffCreate.fullname staffCreateName, "
+                    + "staffUpdate.fullname staffUpdateName from supplier join staff staffCreate "
+                    + "on supplier.id_staff_created = staffCreate.id "
+                    + "join staff staffUpdate "
+                    + "on supplier.id_staff_updated = staffUpdate.id "
+                    + "where supplier.id = ?";
+            statement = conn.prepareStatement(sql);
+            statement.setInt(1, id);
+            
+            ResultSet resultSet = statement.executeQuery();
+            
+            while (resultSet.next()) {
+                Supplier supplier = new Supplier(resultSet.getInt("id"), 
+                        resultSet.getInt("id_staff_created"),
+                        resultSet.getInt("id_staff_updated"),
+                        resultSet.getString("name"), 
+                        resultSet.getString("phoneNumber"), 
+                        resultSet.getString("email"), 
+                        resultSet.getString("address"),
+                        resultSet.getString("created_at"),
+                        resultSet.getString("staffCreateName"),
+                        resultSet.getString("updated_at"),
+                        resultSet.getString("staffUpdateName"));
+                supplierList.add(supplier);
+            }
+            
+            if(supplierList.isEmpty()) {
+                check = false;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(SupplierController.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            if(statement != null) {
+                try {
+                    statement.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(SupplierController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException ex) {
+                    Logger.getLogger(SupplierController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        //ket thuc.
+        
+        return check;
     }
 }

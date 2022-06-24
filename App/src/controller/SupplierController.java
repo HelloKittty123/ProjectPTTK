@@ -184,7 +184,7 @@ public class SupplierController {
                     + "staffUpdate.fullname staffUpdateName from supplier join staff staffCreate "
                     + "on supplier.id_staff_created = staffCreate.id "
                     + "join staff staffUpdate "
-                    + "on supplier.id_staff_updated = staffUpdate.id"
+                    + "on supplier.id_staff_updated = staffUpdate.id "
                     + "where supplier.name like ?";
             statement = conn.prepareStatement(sql);
             statement.setString(1, "%" + name + "%");

@@ -231,7 +231,7 @@ public class ProductController {
                         + "join staff staffUpdated on staffUpdated.id = product.id_staff_updated "
                         + "where title like ?";
             statement = conn.prepareStatement(sql);
-            statement.setString(1, title + "%");
+            statement.setString(1, "%" + title + "%");
             
             ResultSet resultSet = statement.executeQuery();
             

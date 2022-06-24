@@ -339,7 +339,7 @@ public class AppCarrier extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTabbedPane1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "HỆ THỐNG QUẢN LÝ DỊCH VỤ ĐÁM CƯỚI", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Tahoma", 0, 18))); // NOI18N
+        jTabbedPane1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "HỆ THỐNG QUẢN LÝ DỊCH VỤ BÀN GHẾ CHO ĐÁM CƯỚI ĐÁM HỎI", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Tahoma", 0, 18))); // NOI18N
         jTabbedPane1.setAutoscrolls(true);
 
         infoProduct.setBorder(javax.swing.BorderFactory.createTitledBorder("Nhập thông tin sản phẩm"));
@@ -495,8 +495,9 @@ public class AppCarrier extends javax.swing.JFrame {
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1052, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jplProductLayout.createSequentialGroup()
+                        .addGap(14, 14, 14)
                         .addComponent(infoProduct, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jplProductLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jplProductLayout.createSequentialGroup()
                                 .addComponent(jlbThumbProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -866,11 +867,19 @@ public class AppCarrier extends javax.swing.JFrame {
 
     private void btnFindProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindProductActionPerformed
         // TODO add your handling code here:
+        txtTitleProduct.setText("");
+        txtPrice.setText("");
+        txtDescProduct.setText("");
+        txtThumbProduct.setText("");
+        jlbThumbProduct.setIcon(null);
+        
+        
         String input = JOptionPane.showInputDialog(this,"Nhập tên sản phẩm cần tìm kiếm!");
         if(input != null && input.length() > 0 ){
             products = ProductController.findByTitleProduct(input);
             if(products.isEmpty()) {
                 JOptionPane.showMessageDialog(rootPane, "Sản phẩm không tồn tại!");
+                showProduct();
             }
             else {
                 tableModelProduct.setRowCount(0);

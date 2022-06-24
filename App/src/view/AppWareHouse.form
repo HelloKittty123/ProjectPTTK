@@ -68,7 +68,7 @@
       <Properties>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-            <TitledBorder justification="2" position="2" title="H&#x1ec6; TH&#x1ed0;NG QU&#x1ea2;N L&#xdd; D&#x1eca;CH V&#x1ee4; &#x110;&#xc1;M C&#x1af;&#x1eda;I">
+            <TitledBorder justification="2" position="2" title="H&#x1ec6; TH&#x1ed0;NG QU&#x1ea2;N L&#xdd; D&#x1eca;CH V&#x1ee4; B&#xc0;N GH&#x1ebe; CHO &#x110;&#xc1;M C&#x1af;&#x1eda;I &#x110;&#xc1;M H&#x1ece;I">
               <Font PropertyName="font" name="Tahoma" size="18" style="0"/>
             </TitledBorder>
           </Border>
@@ -451,8 +451,8 @@
         <Container class="javax.swing.JPanel" name="jplStaff">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-              <JTabbedPaneConstraints tabName="Qu&#x1ea3;n l&#xfd; nh&#xe2;n vi&#xea;n">
-                <Property name="tabTitle" type="java.lang.String" value="Qu&#x1ea3;n l&#xfd; nh&#xe2;n vi&#xea;n"/>
+              <JTabbedPaneConstraints tabName="Danh s&#xe1;ch nh&#xe2;n vi&#xea;n giao h&#xe0;ng">
+                <Property name="tabTitle" type="java.lang.String" value="Danh s&#xe1;ch nh&#xe2;n vi&#xea;n giao h&#xe0;ng"/>
               </JTabbedPaneConstraints>
             </Constraint>
           </Constraints>

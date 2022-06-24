@@ -60,7 +60,7 @@
       <Properties>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-            <TitledBorder justification="2" position="2" title="H&#x1ec6; TH&#x1ed0;NG QU&#x1ea2;N L&#xdd; D&#x1eca;CH V&#x1ee4; &#x110;&#xc1;M C&#x1af;&#x1eda;I">
+            <TitledBorder justification="2" position="2" title="H&#x1ec6; TH&#x1ed0;NG QU&#x1ea2;N L&#xdd; D&#x1eca;CH V&#x1ee4; B&#xc0;N GH&#x1ebe; CHO &#x110;&#xc1;M C&#x1af;&#x1eda;I &#x110;&#xc1;M H&#x1ece;I">
               <Font PropertyName="font" name="Tahoma" size="18" style="0"/>
             </TitledBorder>
           </Border>
@@ -90,8 +90,9 @@
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
                               <Component id="infoProduct" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
                                       <Component id="jlbThumbProduct" min="-2" pref="230" max="-2" attributes="0"/>

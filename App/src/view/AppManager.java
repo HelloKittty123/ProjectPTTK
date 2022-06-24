@@ -841,7 +841,7 @@ public class AppManager extends javax.swing.JFrame {
                         .addComponent(btnSelectImg, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(342, Short.MAX_VALUE))
+                .addContainerGap(362, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Quản lý sản phẩm", jplProduct);
@@ -1059,7 +1059,7 @@ public class AppManager extends javax.swing.JFrame {
                         .addComponent(btnCarrier, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(34, 34, 34)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(131, Short.MAX_VALUE))
+                .addContainerGap(151, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Quản lý nhân viên", jplStaff);
@@ -1113,7 +1113,7 @@ public class AppManager extends javax.swing.JFrame {
                 .addGroup(jplStatisticLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jlbInterest, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(484, Short.MAX_VALUE))
+                .addContainerGap(504, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Thống kê", jplStatistic);
@@ -1225,7 +1225,7 @@ public class AppManager extends javax.swing.JFrame {
                             .addGroup(jplSupplierLayout.createSequentialGroup()
                                 .addGap(11, 11, 11)
                                 .addComponent(btnUpdateSupplier, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 3, Short.MAX_VALUE)))
+                        .addGap(0, 13, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jplSupplierLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnFindSupplier, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1238,7 +1238,7 @@ public class AppManager extends javax.swing.JFrame {
                 .addComponent(btnResetSupplier, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(51, 51, 51)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 413, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(298, Short.MAX_VALUE))
+                .addContainerGap(308, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Quản lý nhà cung cấp", jplSupplier);
@@ -1408,7 +1408,7 @@ public class AppManager extends javax.swing.JFrame {
                 .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 411, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(269, Short.MAX_VALUE))
+                .addContainerGap(289, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Quản lý khách hàng", jplGuest);
@@ -1605,7 +1605,7 @@ public class AppManager extends javax.swing.JFrame {
                 .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(396, Short.MAX_VALUE))
+                .addContainerGap(416, Short.MAX_VALUE))
         );
 
         jplBillManage.addTab("Hóa đơn xuất", jplBillExport);
@@ -1745,9 +1745,9 @@ public class AppManager extends javax.swing.JFrame {
                     .addComponent(btnShowListBillImport, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnFindBillImport, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnResetBillImport, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 53, Short.MAX_VALUE)
                 .addComponent(jScrollPane12, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(462, Short.MAX_VALUE))
+                .addContainerGap(472, Short.MAX_VALUE))
         );
 
         jplBillManage.addTab("Hóa đơn nhập", jplBillImport);
@@ -1765,10 +1765,7 @@ public class AppManager extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jTabbedPane1)
-                .addContainerGap())
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
 
         pack();
@@ -1790,23 +1787,33 @@ public class AppManager extends javax.swing.JFrame {
 
     private void btnFindBillImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindBillImportActionPerformed
         // TODO add your handling code here:
+        txtIDSupplier.setText("");
+        txtIDCarrierBillImport.setText("");
+
+        btnEditBillImport.setEnabled(false);
+        btnDeleteBillImport.setEnabled(false);
+        btnShowListBillImport.setEnabled(false);
         String input = JOptionPane.showInputDialog(this,"Nhập tên nhà cung cấp cần tìm kiếm!");
         if(input != null && input.length() > 0 ){
             billImportList = BillImportController.findByNameSupplier(input);
+            if(billImportList.isEmpty()) {
+                JOptionPane.showMessageDialog(rootPane, "Không tìm thấy thông tin hóa đơn của nhà cung cấp này");
+                showBillImport();
+            } else {
+                tableModelBillImport.setRowCount(0);
 
-            tableModelBillImport.setRowCount(0);
-
-            billImportList.forEach((billImport) -> {
-            tableModelBillImport.addRow(new Object[] {tableModelBillImport.getRowCount() + 1,
-                billImport.getNameSupplier(),
-                billImport.getTotal(),
-                billImport.getNameCarrier(),
-                billImport.getCreatedAt(),
-                billImport.getNameStaffCreated(),
-                billImport.getUpdatedAt(),
-                billImport.getNameStaffUpdated()
-            });
-        });
+                billImportList.forEach((billImport) -> {
+                    tableModelBillImport.addRow(new Object[] {tableModelBillImport.getRowCount() + 1,
+                        billImport.getNameSupplier(),
+                        billImport.getTotal(),
+                        billImport.getNameCarrier(),
+                        billImport.getCreatedAt(),
+                        billImport.getNameStaffCreated(),
+                        billImport.getUpdatedAt(),
+                        billImport.getNameStaffUpdated()
+                    });
+                });
+            }
         } else {
             showBillImport();
         }
@@ -1880,6 +1887,10 @@ public class AppManager extends javax.swing.JFrame {
                     txtIDSupplier.setText("");
                     txtIDCarrierBillImport.setText("");
 
+                    btnEditBillImport.setEnabled(false);
+                    btnDeleteBillImport.setEnabled(false);
+                    btnShowListBillImport.setEnabled(false);
+
                     showBillImport();
                 } else {
                     JOptionPane.showMessageDialog(rootPane, "ID nhân viên không tồn tại hoặc đã nghỉ việc!");
@@ -1913,6 +1924,10 @@ public class AppManager extends javax.swing.JFrame {
                 txtIDSupplier.setText("");
                 txtIDCarrierBillImport.setText("");
 
+                btnEditBillImport.setEnabled(false);
+                btnDeleteBillImport.setEnabled(false);
+                btnShowListBillImport.setEnabled(false);
+
                 showBillImport();
             } else {
                 JOptionPane.showMessageDialog(rootPane, "ID nhân viên không tồn tại hoặc đã nghỉ việc!");
@@ -1933,25 +1948,36 @@ public class AppManager extends javax.swing.JFrame {
 
     private void btnFindSupplierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindSupplierActionPerformed
         // TODO add your handling code here:
+        txtSupplier.setText("");
+        txtEmailSupplier.setText("");
+        txtPhoneSupplier.setText("");
+        txtAddressSupplier.setText("");
+
+        btnUpdateSupplier.setEnabled(false);
+        
         String input = JOptionPane.showInputDialog(this,"Nhập tên nhà cung cấp cần tìm kiếm:");
         if(input != null && input.length() > 0 ){
             supplierList = SupplierController.findByNameSupplier(input);
+            if(supplierList.isEmpty()) {
+                JOptionPane.showMessageDialog(rootPane, "Nhà cung cấp này không tồn tại");
+                showSupplier();
+            } else {
+                tableModelSupplier.setRowCount(0);
 
-            tableModelSupplier.setRowCount(0);
-
-            supplierList.forEach((supplier) -> {
-            tableModelSupplier.addRow(new Object[] {tableModelSupplier.getRowCount() + 1,
-                supplier.getId(),
-                supplier.getName(),
-                supplier.getPhoneNumber(),
-                supplier.getEmail(),
-                supplier.getAddress(),
-                supplier.getCreatedAt(),
-                supplier.getNameStaffCreated(),
-                supplier.getUpdatedAt(),
-                supplier.getNameStaffUpdated()
-            });
-        });
+                supplierList.forEach((supplier) -> {
+                    tableModelSupplier.addRow(new Object[] {tableModelSupplier.getRowCount() + 1,
+                        supplier.getId(),
+                        supplier.getName(),
+                        supplier.getPhoneNumber(),
+                        supplier.getEmail(),
+                        supplier.getAddress(),
+                        supplier.getCreatedAt(),
+                        supplier.getNameStaffCreated(),
+                        supplier.getUpdatedAt(),
+                        supplier.getNameStaffUpdated()
+                    });
+                });
+            }
         } else {
             showSupplier();
         }
@@ -2062,6 +2088,8 @@ public class AppManager extends javax.swing.JFrame {
             txtPhoneSupplier.setText("");
             txtAddressSupplier.setText("");
 
+            btnUpdateSupplier.setEnabled(false);
+
             showSupplier();
         }
     }//GEN-LAST:event_btnAddSupplierActionPerformed
@@ -2092,27 +2120,41 @@ public class AppManager extends javax.swing.JFrame {
 
     private void btnFindStaffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindStaffActionPerformed
         // TODO add your handling code here:
+        txtFullname.setText("");
+        boxGender.setSelectedIndex(0);
+        txtEmail.setText("");
+        txtPhonenumber.setText("");
+        txtAddress.setText("");
+        boxRole.setSelectedIndex(0);
+        txtPassword.setText("");
+
+        btnUpdateStaff.setEnabled(false);
+        
         String input = JOptionPane.showInputDialog(this,"Nhập tên người dùng cần tìm kiếm:");
         if(input != null && input.length() > 0 ){
             staffList = StaffController.findByFullnameStaff(input);
+            if(staffList.isEmpty()) {
+                JOptionPane.showMessageDialog(rootPane, "Không có nhân viên này trong hệ thống");
+                showStaff();
+            } else {
+                tableModelStaff.setRowCount(0);
 
-            tableModelStaff.setRowCount(0);
-        
-            staffList.forEach((staff) -> {
-                tableModelStaff.addRow(new Object[] {tableModelStaff.getRowCount() + 1,
-                    staff.getId(),
-                    staff.getFullName(),
-                    staff.getGender(),
-                    staff.getEmail(),
-                    staff.getPhoneNumber(),
-                    staff.getAddress(),
-                    staff.getRoleName(),
-                    staff.getPassword(),
-                    staff.getCreatedAt(),
-                    staff.getUpdatedAt(),
-                    staff.getStatus()
+                staffList.forEach((staff) -> {
+                    tableModelStaff.addRow(new Object[] {tableModelStaff.getRowCount() + 1,
+                        staff.getId(),
+                        staff.getFullName(),
+                        staff.getGender(),
+                        staff.getEmail(),
+                        staff.getPhoneNumber(),
+                        staff.getAddress(),
+                        staff.getRoleName(),
+                        staff.getPassword(),
+                        staff.getCreatedAt(),
+                        staff.getUpdatedAt(),
+                        staff.getStatus()
+                    });
                 });
-            });
+            }
         } else {
             showStaff();
         }
@@ -2272,26 +2314,39 @@ public class AppManager extends javax.swing.JFrame {
 
     private void btnFindCustomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindCustomActionPerformed
         // TODO add your handling code here:
+        txtNameCustom.setText("");
+        cbGenderCustom.setSelectedIndex(0);
+        txtEmailCustom.setText("");
+        txtPhoneCustom.setText("");
+        txtAddressCustom.setText("");
+
+        btnEditCustom.setEnabled(false);
+        
         String input = JOptionPane.showInputDialog(this,"Nhập tên khách hàng cần tìm kiếm:");
         if(input != null && input.length() > 0 ){
             customList = CustomController.findByNameCustom(input);
-
-            tableModelCustom.setRowCount(0);
+            if(customList.isEmpty()) {
+                JOptionPane.showMessageDialog(rootPane, "Khách hàng này không tồn tại");
+                showCustom();
+            }
+            else {
+                tableModelCustom.setRowCount(0);
         
-            customList.forEach((custom) -> {
-            tableModelCustom.addRow(new Object[] {tableModelCustom.getRowCount() + 1,
-                custom.getId(),
-                custom.getFullName(),
-                custom.getGender(),
-                custom.getEmail(),
-                custom.getPhoneNumber(),
-                custom.getAddress(),
-                custom.getCreated_at(),
-                custom.getNameCreatedStaff(),
-                custom.getUpdated_at(),
-                custom.getNameUpdatedStaff()
-            });
-        });
+                customList.forEach((custom) -> {
+                    tableModelCustom.addRow(new Object[] {tableModelCustom.getRowCount() + 1,
+                        custom.getId(),
+                        custom.getFullName(),
+                        custom.getGender(),
+                        custom.getEmail(),
+                        custom.getPhoneNumber(),
+                        custom.getAddress(),
+                        custom.getCreated_at(),
+                        custom.getNameCreatedStaff(),
+                        custom.getUpdated_at(),
+                        custom.getNameUpdatedStaff()
+                    });
+                });
+            }
         } else {
             showCustom();
         }
@@ -2378,6 +2433,8 @@ public class AppManager extends javax.swing.JFrame {
                 txtPrice.setText("");
                 txtDescProduct.setText("");
                 txtThumbProduct.setText("");
+                jlbThumbProduct.setIcon(null);
+
                 btnUpdateProduct.setEnabled(false);
                 showProduct();
             }
@@ -2386,11 +2443,20 @@ public class AppManager extends javax.swing.JFrame {
 
     private void btnFindProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindProductActionPerformed
         // TODO add your handling code here:
+        txtTitleProduct.setText("");
+        txtPrice.setText("");
+        txtDescProduct.setText("");
+        txtThumbProduct.setText("");
+        jlbThumbProduct.setIcon(null);
+        
+        btnUpdateProduct.setEnabled(false);
+        
         String input = JOptionPane.showInputDialog(this,"Nhập tên sản phẩm cần tìm kiếm!");
         if(input != null && input.length() > 0 ){
             products = ProductController.findByTitleProduct(input);
             if(products.isEmpty()) {
                 JOptionPane.showMessageDialog(rootPane, "Sản phẩm không tồn tại!");
+                showProduct();
             }
             else {
                 tableModelProduct.setRowCount(0);
@@ -2422,19 +2488,6 @@ public class AppManager extends javax.swing.JFrame {
         txtDescProduct.setText("");
         txtThumbProduct.setText("");
         jlbThumbProduct.setIcon(null);
-        
-//        File file = new File("");
-//        // lấy đường dẫn file
-//        String pathFile = file.getAbsolutePath();
-//        System.out.println(pathFile);
-//        BufferedImage b;
-//        try {
-//            b = ImageIO.read(file);
-//            jlbThumbProduct.setIcon(new ImageIcon(b.getScaledInstance(200, 200, Image.SCALE_SMOOTH)));
-//            txtThumbProduct.setText(pathFile);
-//        } catch (IOException ex) {
-//            ex.printStackTrace();
-//        }
         
         btnUpdateProduct.setEnabled(false);
         showProduct();
@@ -2492,6 +2545,8 @@ public class AppManager extends javax.swing.JFrame {
                 txtPrice.setText("");
                 txtDescProduct.setText("");
                 txtThumbProduct.setText("");
+                jlbThumbProduct.setIcon(null);
+
                 btnUpdateProduct.setEnabled(false);
                 showProduct();
             }
@@ -2567,6 +2622,10 @@ public class AppManager extends javax.swing.JFrame {
                     jtfDateEnd.setText("");
                     txtNoteBillExport.setText("");
 
+                    btnShowProductOrder.setEnabled(false);
+                    btnUpdateBillExport.setEnabled(false);
+                    btnDeleteOrder.setEnabled(false);
+
                     showBillExport();
                 } else {
                     JOptionPane.showMessageDialog(rootPane, "ID nhân viên không tồn tại hoặc đã nghỉ việc!");
@@ -2586,38 +2645,52 @@ public class AppManager extends javax.swing.JFrame {
         jtfDateEnd.setText("");
         txtNoteBillExport.setText("");
 
-        txtIDCustom.setEditable(true);
-        btnDeleteOrder.setEnabled(false);
         btnShowProductOrder.setEnabled(false);
+        btnUpdateBillExport.setEnabled(false);
+        btnDeleteOrder.setEnabled(false);
         showBillExport();
     }//GEN-LAST:event_btnResetOrderActionPerformed
 
     private void btnFindOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindOrderActionPerformed
         // TODO add your handling code here:
+        txtIDCustom.setText("");
+        txtIDCarrierBillExport.setText("");
+        jtfDateStart.setText("");
+        jtfDateEnd.setText("");
+        txtNoteBillExport.setText("");
+
+        btnShowProductOrder.setEnabled(false);
+        btnUpdateBillExport.setEnabled(false);
+        btnDeleteOrder.setEnabled(false);
+        
         String input = JOptionPane.showInputDialog(this,"Nhập tên khách hàng cần tìm kiếm!");
         if(input != null && input.length() > 0 ){
             billExportList = BillExportController.findByNameCustom(input);
+            if(billExportList.isEmpty()) {
+                JOptionPane.showMessageDialog(rootPane, "Không tìm thấy hóa đơn của khách hàng này");
+                showBillExport();
+            } else {
+                tableModelBillExport.setRowCount(0);
 
-            tableModelBillExport.setRowCount(0);
-
-            billExportList.forEach((billExport) -> {
-                tableModelBillExport.addRow(new Object[] {tableModelBillExport.getRowCount() + 1,
-                    billExport.getNameCustom(),
-                    billExport.getGender(),
-                    billExport.getEmail(),
-                    billExport.getPhoneNumber(),
-                    billExport.getAddress(),
-                    billExport.getNote(),
-                    billExport.getTotal(),
-                    billExport.getNameCarrier(),
-                    billExport.getTimeStartedBorrowed(),
-                    billExport.getTimeEndBorrowed(),
-                    billExport.getCreatedAt(),
-                    billExport.getNameStaffCreated(),
-                    billExport.getUpdatedAt(),
-                    billExport.getNameStaffUpdated()
+                billExportList.forEach((billExport) -> {
+                    tableModelBillExport.addRow(new Object[] {tableModelBillExport.getRowCount() + 1,
+                        billExport.getNameCustom(),
+                        billExport.getGender(),
+                        billExport.getEmail(),
+                        billExport.getPhoneNumber(),
+                        billExport.getAddress(),
+                        billExport.getNote(),
+                        billExport.getTotal(),
+                        billExport.getNameCarrier(),
+                        billExport.getTimeStartedBorrowed(),
+                        billExport.getTimeEndBorrowed(),
+                        billExport.getCreatedAt(),
+                        billExport.getNameStaffCreated(),
+                        billExport.getUpdatedAt(),
+                        billExport.getNameStaffUpdated()
+                    });
                 });
-            });
+            }
         } else {
             showBillExport();
         }
@@ -2654,6 +2727,8 @@ public class AppManager extends javax.swing.JFrame {
                 jtfDateEnd.setText("");
                 txtNoteBillExport.setText("");
 
+                btnShowProductOrder.setEnabled(false);
+                btnUpdateBillExport.setEnabled(false);
                 btnDeleteOrder.setEnabled(false);
                 JOptionPane.showMessageDialog(rootPane, "Bạn đã xóa thành công");
                 showBillExport();
@@ -2712,6 +2787,8 @@ public class AppManager extends javax.swing.JFrame {
             txtEmailCustom.setText("");
             txtPhoneCustom.setText("");
             txtAddressCustom.setText("");
+            
+            btnEditCustom.setEnabled(false);
 
             showCustom();
         }
@@ -2772,6 +2849,8 @@ public class AppManager extends javax.swing.JFrame {
                 txtEmailCustom.setText("");
                 txtPhoneCustom.setText("");
                 txtAddressCustom.setText("");
+                
+                btnEditCustom.setEnabled(false);
 
                 showCustom();
             }
@@ -2786,6 +2865,8 @@ public class AppManager extends javax.swing.JFrame {
         txtEmailCustom.setText("");
         txtPhoneCustom.setText("");
         txtAddressCustom.setText("");
+
+        btnEditCustom.setEnabled(false);
         
         showCustom();
     }//GEN-LAST:event_btnResetCustomActionPerformed
@@ -2833,6 +2914,10 @@ public class AppManager extends javax.swing.JFrame {
                     jtfDateStart.setText("");
                     jtfDateEnd.setText("");
                     txtNoteBillExport.setText("");
+
+                    btnShowProductOrder.setEnabled(false);
+                    btnUpdateBillExport.setEnabled(false);
+                    btnDeleteOrder.setEnabled(false);
 
                     showBillExport();
                 } else {

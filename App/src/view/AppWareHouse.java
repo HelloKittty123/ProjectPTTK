@@ -547,7 +547,7 @@ public class AppWareHouse extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTabbedPane1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "HỆ THỐNG QUẢN LÝ DỊCH VỤ ĐÁM CƯỚI", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Tahoma", 0, 18))); // NOI18N
+        jTabbedPane1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "HỆ THỐNG QUẢN LÝ DỊCH VỤ BÀN GHẾ CHO ĐÁM CƯỚI ĐÁM HỎI", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Tahoma", 0, 18))); // NOI18N
         jTabbedPane1.setAutoscrolls(true);
 
         infoProduct.setBorder(javax.swing.BorderFactory.createTitledBorder("Nhập thông tin sản phẩm"));
@@ -818,7 +818,7 @@ public class AppWareHouse extends javax.swing.JFrame {
                 .addContainerGap(522, Short.MAX_VALUE))
         );
 
-        jTabbedPane1.addTab("Quản lý nhân viên", jplStaff);
+        jTabbedPane1.addTab("Danh sách nhân viên giao hàng", jplStaff);
 
         jLabel1.setText("Tên nhà cung cấp:");
 
@@ -1491,6 +1491,12 @@ public class AppWareHouse extends javax.swing.JFrame {
 
     private void btnFindBillImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindBillImportActionPerformed
         // TODO add your handling code here:
+        txtIDSupplier.setText("");
+        txtIDCarrierBillImport.setText("");
+
+        btnEditBillImport.setEnabled(false);
+        btnDeleteBillImport.setEnabled(false);
+        btnShowListBillImport.setEnabled(false);
         String input = JOptionPane.showInputDialog(this,"Nhập tên nhà cung cấp cần tìm kiếm!");
         if(input != null && input.length() > 0 ){
             billImportList = BillImportController.findByNameSupplier(input);
@@ -1540,10 +1546,10 @@ public class AppWareHouse extends javax.swing.JFrame {
         // TODO add your handling code here:
         txtIDSupplier.setText("");
         txtIDCarrierBillImport.setText("");
-        
-        txtIDSupplier.setEditable(true);
+
         btnEditBillImport.setEnabled(false);
         btnDeleteBillImport.setEnabled(false);
+        btnShowListBillImport.setEnabled(false);
 
         showBillImport();
     }//GEN-LAST:event_btnResetBillImportActionPerformed
@@ -1581,6 +1587,10 @@ public class AppWareHouse extends javax.swing.JFrame {
                     txtIDSupplier.setText("");
                     txtIDCarrierBillImport.setText("");
 
+                    btnEditBillImport.setEnabled(false);
+                    btnDeleteBillImport.setEnabled(false);
+                    btnShowListBillImport.setEnabled(false);
+
                     showBillImport();
                 } else {
                     JOptionPane.showMessageDialog(rootPane, "ID nhân viên không tồn tại hoặc đã nghỉ việc!");
@@ -1614,6 +1624,10 @@ public class AppWareHouse extends javax.swing.JFrame {
                 txtIDSupplier.setText("");
                 txtIDCarrierBillImport.setText("");
 
+                btnEditBillImport.setEnabled(false);
+                btnDeleteBillImport.setEnabled(false);
+                btnShowListBillImport.setEnabled(false);
+
                 showBillImport();
             } else {
                 JOptionPane.showMessageDialog(rootPane, "ID nhân viên không tồn tại hoặc đã nghỉ việc!");
@@ -1634,6 +1648,12 @@ public class AppWareHouse extends javax.swing.JFrame {
 
     private void btnFindSupplierActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindSupplierActionPerformed
         // TODO add your handling code here:
+        txtSupplier.setText("");
+        txtEmailSupplier.setText("");
+        txtPhoneSupplier.setText("");
+        txtAddressSupplier.setText("");
+
+        btnUpdateSupplier.setEnabled(false);
         String input = JOptionPane.showInputDialog(this,"Nhập tên nhà cung cấp cần tìm kiếm:");
         if(input != null && input.length() > 0 ){
             supplierList = SupplierController.findByNameSupplier(input);
@@ -1763,6 +1783,8 @@ public class AppWareHouse extends javax.swing.JFrame {
             txtPhoneSupplier.setText("");
             txtAddressSupplier.setText("");
 
+            btnUpdateSupplier.setEnabled(false);
+
             showSupplier();
         }
     }//GEN-LAST:event_btnAddSupplierActionPerformed
@@ -1803,6 +1825,14 @@ public class AppWareHouse extends javax.swing.JFrame {
 
     private void btnFindCustomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindCustomActionPerformed
         // TODO add your handling code here:
+        txtNameCustom.setText("");
+        cbGenderCustom.setSelectedIndex(0);
+        txtEmailCustom.setText("");
+        txtPhoneCustom.setText("");
+        txtAddressCustom.setText("");
+
+        btnEditCustom.setEnabled(false);
+        
         String input = JOptionPane.showInputDialog(this,"Nhập tên khách hàng cần tìm kiếm:");
         if(input != null && input.length() > 0 ){
             customList = CustomController.findByNameCustom(input);
@@ -1909,6 +1939,8 @@ public class AppWareHouse extends javax.swing.JFrame {
                 txtPrice.setText("");
                 txtDescProduct.setText("");
                 txtThumbProduct.setText("");
+                jlbThumbProduct.setIcon(null);
+
                 btnUpdateProduct.setEnabled(false);
                 showProduct();
             }
@@ -1917,11 +1949,20 @@ public class AppWareHouse extends javax.swing.JFrame {
 
     private void btnFindProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindProductActionPerformed
         // TODO add your handling code here:
+        txtTitleProduct.setText("");
+        txtPrice.setText("");
+        txtDescProduct.setText("");
+        txtThumbProduct.setText("");
+        jlbThumbProduct.setIcon(null);
+        
+        btnUpdateProduct.setEnabled(false);
+        
         String input = JOptionPane.showInputDialog(this,"Nhập tên sản phẩm cần tìm kiếm!");
         if(input != null && input.length() > 0 ){
             products = ProductController.findByTitleProduct(input);
             if(products.isEmpty()) {
                 JOptionPane.showMessageDialog(rootPane, "Sản phẩm không tồn tại!");
+                showProduct();
             }
             else {
                 tableModelProduct.setRowCount(0);
@@ -2023,6 +2064,8 @@ public class AppWareHouse extends javax.swing.JFrame {
                 txtPrice.setText("");
                 txtDescProduct.setText("");
                 txtThumbProduct.setText("");
+                jlbThumbProduct.setIcon(null);
+
                 btnUpdateProduct.setEnabled(false);
                 showProduct();
             }
@@ -2094,6 +2137,10 @@ public class AppWareHouse extends javax.swing.JFrame {
                     jtfDateEnd.setText("");
                     txtNoteBillExport.setText("");
 
+                    btnShowProductOrder.setEnabled(false);
+                    btnUpdateBillExport.setEnabled(false);
+                    btnDeleteOrder.setEnabled(false);
+
                     showBillExport();
                 } else {
                     JOptionPane.showMessageDialog(rootPane, "ID nhân viên không tồn tại hoặc đã nghỉ việc!");
@@ -2121,6 +2168,15 @@ public class AppWareHouse extends javax.swing.JFrame {
 
     private void btnFindOrderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFindOrderActionPerformed
         // TODO add your handling code here:
+        txtIDCustom.setText("");
+        txtIDCarrierBillExport.setText("");
+        jtfDateStart.setText("");
+        jtfDateEnd.setText("");
+        txtNoteBillExport.setText("");
+
+        btnShowProductOrder.setEnabled(false);
+        btnUpdateBillExport.setEnabled(false);
+        btnDeleteOrder.setEnabled(false);
         String input = JOptionPane.showInputDialog(this,"Nhập tên khách hàng cần tìm kiếm!");
         if(input != null && input.length() > 0 ){
             billExportList = BillExportController.findByNameCustom(input);
@@ -2180,6 +2236,8 @@ public class AppWareHouse extends javax.swing.JFrame {
                 jtfDateEnd.setText("");
                 txtNoteBillExport.setText("");
 
+                btnShowProductOrder.setEnabled(false);
+                btnUpdateBillExport.setEnabled(false);
                 btnDeleteOrder.setEnabled(false);
                 JOptionPane.showMessageDialog(rootPane, "Bạn đã xóa thành công");
                 showBillExport();
@@ -2238,6 +2296,8 @@ public class AppWareHouse extends javax.swing.JFrame {
             txtEmailCustom.setText("");
             txtPhoneCustom.setText("");
             txtAddressCustom.setText("");
+
+            btnEditCustom.setEnabled(false);
 
             showCustom();
         }
@@ -2298,6 +2358,8 @@ public class AppWareHouse extends javax.swing.JFrame {
                 txtEmailCustom.setText("");
                 txtPhoneCustom.setText("");
                 txtAddressCustom.setText("");
+                
+                btnEditCustom.setEnabled(false);
 
                 showCustom();
             }
@@ -2312,6 +2374,8 @@ public class AppWareHouse extends javax.swing.JFrame {
         txtEmailCustom.setText("");
         txtPhoneCustom.setText("");
         txtAddressCustom.setText("");
+
+        btnEditCustom.setEnabled(false);
         
         showCustom();
     }//GEN-LAST:event_btnResetCustomActionPerformed
@@ -2359,6 +2423,10 @@ public class AppWareHouse extends javax.swing.JFrame {
                     jtfDateStart.setText("");
                     jtfDateEnd.setText("");
                     txtNoteBillExport.setText("");
+
+                    btnShowProductOrder.setEnabled(false);
+                    btnUpdateBillExport.setEnabled(false);
+                    btnDeleteOrder.setEnabled(false);
 
                     showBillExport();
                 } else {

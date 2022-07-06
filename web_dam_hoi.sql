@@ -264,7 +264,7 @@ CREATE TABLE `product` (
   CONSTRAINT `product_ibfk_1` FOREIGN KEY (`id_staff_created`) REFERENCES `staff` (`id`),
   CONSTRAINT `product_ibfk_2` FOREIGN KEY (`id_staff_updated`) REFERENCES `staff` (`id`),
   CONSTRAINT `product_ibfk_3` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -273,7 +273,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
-INSERT INTO `product` VALUES (3,1,'Bàn ghế Louis 2','Bàn ghế','C:\\Users\\Dell\\Downloads\\Cac-hinh-anh-ban-ghe-go-phong-khach-dep-1.jpg',10000,5,'2022-06-19 11:54:53',5,'2022-06-23 07:56:17',5),(4,1,'Bàn ghế Louis 1','Bàn ghế','C:\\Users\\Dell\\Downloads\\ban_ghe.jpg',50000,4,'2022-06-22 11:54:19',5,'2022-06-23 01:45:39',5),(5,1,'Bàn ghế Louis 3','Bàn ghế','C:\\Users\\Dell\\Downloads\\Cac-hinh-anh-ban-ghe-go-phong-khach-dep-1.jpg',60000,0,'2022-06-23 08:40:37',5,'2022-06-23 08:41:14',5);
+INSERT INTO `product` VALUES (3,1,'Bàn ghế Louis 2','Bàn ghế','C:\\Users\\Dell\\Downloads\\Cac-hinh-anh-ban-ghe-go-phong-khach-dep-1.jpg',10000,5,'2022-06-19 11:54:53',5,'2022-06-23 07:56:17',5),(4,1,'Bàn ghế Louis 1','Bàn ghế','C:\\Users\\Dell\\Desktop\\rgb.vn_he_mau_rgb.jpg',50000,4,'2022-06-22 11:54:19',5,'2022-06-24 08:23:31',5),(5,1,'Bàn ghế Louis 3','Bàn ghế','C:\\Users\\Dell\\Downloads\\Cac-hinh-anh-ban-ghe-go-phong-khach-dep-1.jpg',60000,0,'2022-06-23 08:40:37',5,'2022-06-24 08:21:04',5),(6,1,'Bàn ghế Louis 4','Bàn ghế','C:\\Users\\Dell\\Downloads\\Cac-hinh-anh-ban-ghe-go-phong-khach-dep-1.jpg',20000,0,'2022-06-24 07:42:39',5,'2022-06-24 08:23:52',5);
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -381,4 +381,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-06-23 23:16:25
+-- Dump completed on 2022-07-06 22:46:08
